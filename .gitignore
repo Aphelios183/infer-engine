@@ -1,0 +1,23 @@
+# 构建产物
+build/
+*.o
+*.so
+*.a
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# 模型权重（很大，不要进仓库）
+models/
+*.safetensors
+*.gguf
+*.bin
+
+# 运行产物
+results/
+
+# 编辑器
+.vscode/
+.idea/
