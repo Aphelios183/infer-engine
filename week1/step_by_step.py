@@ -66,6 +66,11 @@ q = x @ W_q          # (B, T, C)
 k = x @ W_k
 v = x @ W_v
 
+# 缩放因子要除以 sqrt(dk)，其中 dk = "点积实际发生的那个维度"。
+# 单头情况下 q 的最后一维就是 C，所以 dk = C。
+# 这里很容易搞错：dk 不等于 head_dim，除非你已经把头切开了（见第 4 步）。
+dk = C
+
 show("q = x @ W_q", q)
 show("k = x @ W_k", k)
 show("v = x @ W_v", v)
@@ -89,14 +94,43 @@ print("=" * 70)
 print("第 2 步：缩放（防止 softmax 饱和）")
 print("=" * 70)
 
-print(f"  q 的标准差       = {q.std().item():.4f}   (≈1，因为做了初始化缩放)")
-print(f"  缩放前 scores 标准差 = {scores.std().item():.4f}   (≈sqrt(Dh)={math.sqrt(Dh):.2f})")
-scores_scaled = scores / math.sqrt(Dh)
-print(f"  缩放后 scores 标准差 = {scores_scaled.std().item():.4f}   (≈1，回到正常范围)")
-print(f"  Dh={Dh} 时 1/sqrt(Dh)={1/math.sqrt(Dh):.4f}")
+# 缩放后标准差应该是多少？用公式推，不要凭感觉说"应该 ≈ 1"。
+#   scores = Σ(i=1..dk) q_i · k_i
+#   var(scores) = dk · var(q) · var(k)        （各分量独立、零均值时）
+#   std(scores) = sqrt(dk) · sqrt(var(q)·var(k))
+#   除以 sqrt(dk) 后 →  std = sqrt(var(q)·var(k))
+# q,k 恰好单位方差时该值为 1。这才是"除以 sqrt(dk)"的准确含义。
+scores_scaled = scores / math.sqrt(dk)
+
+print(f"  小样本 (B={B}, T={T})，只有 {scores.numel()} 个 scores：")
+print(f"    缩放前 std = {scores.std().item():.4f}，缩放后 std = {scores_scaled.std().item():.4f}")
+print(f"    理论值 sqrt(dk) = {math.sqrt(dk):.4f}")
+print("    ↑ 偏离理论值很多，因为样本量太小，样本标准差本身噪声极大")
 print()
-print("  这就是缩放的完整理由：点积把 Dh 个乘积加起来，方差随 Dh 线性增长；")
-print("  除以 sqrt(Dh) 恰好把方差拉回 1，softmax 才不会饱和。")
+
+# 用同样的权重投影更多 token，让统计量收敛
+with torch.no_grad():
+    B_big, T_big = 16, 256
+    x_big = torch.randn(B_big, T_big, C)
+    q_big = x_big @ W_q
+    k_big = x_big @ W_k
+    scores_big = q_big @ k_big.transpose(-2, -1)
+
+print(f"  大样本 (B={B_big}, T={T_big})，共 {scores_big.numel():,} 个 scores：")
+print(f"    缩放前 std = {scores_big.std().item():.4f}   理论值 sqrt(dk) = {math.sqrt(dk):.4f}")
+print(f"    缩放后 std = {(scores_big / math.sqrt(dk)).std().item():.4f}   理论值 = {math.sqrt(q_big.var().item() * k_big.var().item()):.4f}")
+print()
+print("  结论：点积把 dk 个乘积加起来，方差随 dk 线性增长；")
+print("  除以 sqrt(dk) 恰好消掉 dk，把标准差拉回 O(1)，softmax 才不会饱和。")
+print()
+print("  顺带一个教训：小样本的统计量会骗人。上面 32 个样本给出的 std 是 0.79，")
+print("  看起来接近 1 就以为对了；换成 100 万个样本才看清真实规律。")
+print()
+print("  ⚠️ 这里曾经写错成 sqrt(Dh)：当时 dk 明明是 C=8，却用了 head_dim=4。")
+print(f"     错误版本缩放后 std = {(scores / math.sqrt(Dh)).std().item():.4f}，")
+print(f"     正确版本缩放后 std = {scores_scaled.std().item():.4f}。")
+print("     错误证据其实就打印在屏幕上，但旁边的注释却写着\"≈1\"。")
+print("     教训：让数字说话，不要相信注释。")
 
 
 # ---------------------------------------------------------------------------
@@ -167,6 +201,10 @@ print(f"    q_mh[0,0,0] = {q_mh[0, 0, 0].tolist()}")
 print(f"    q[0,0][:Dh] = {q[0, 0, :Dh].tolist()}")
 
 # 多头版本的 scores：(B,H,T,Dh) x (B,H,Dh,T) -> (B,H,T,T)
+# 注意 dk 在这里变了：切头之后点积发生在 Dh 维上，不再是 C。
+# 缩放因子必须跟着换成 sqrt(Dh)，忘了换就会静默地算错。
+dk = Dh
+print(f"  切头后点积维度 dk 从 C={C} 变为 Dh={dk}，缩放因子随之改变")
 scores_mh = q_mh @ k_mh.transpose(-2, -1) / math.sqrt(Dh)
 show("scores_mh (B,H,T,T)", scores_mh)
 print("  ↑ 每个头都有一张自己独立的 T×T 注意力图")

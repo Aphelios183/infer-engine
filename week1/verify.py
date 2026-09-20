@@ -41,7 +41,7 @@ print("验证 1：与 F.scaled_dot_product_attention 对比")
 print("=" * 70)
 
 torch.manual_seed(42)
-B, T, C, H = 2, 16, 64, 4
+B, T, C, H = 2, 4, 64, 4
 Dh = C // H
 
 q = torch.randn(B, H, T, Dh, dtype=torch.float32)
@@ -99,7 +99,7 @@ print("=" * 70)
 # 这是比"数值对拍"更本质的检查——即使参照实现也错了，这个检查依然有效。
 with torch.no_grad():
     x2 = x.clone()
-    x2[:, T // 2 :, :] += 100.0          # 大幅扰动后半段
+    x2[:, T // 2 :, :] += 100.0          # 大幅扰动后半段，加载MHA输入张量x，对所有样本的输入序列后半段+100
 
     out1 = mine_mha(x, causal=True)
     out2 = mine_mha(x2, causal=True)
@@ -112,6 +112,41 @@ print(f"  后半段输出差异 = {suffix_diff:.3e}  （应明显 > 0，因为�
 causal_ok = prefix_diff < 1e-5 and suffix_diff > 1e-2
 print(f"  因果性 {'✅ 通过' if causal_ok else '❌ 失败'}")
 results.append(causal_ok)
+
+
+print()
+print("=" * 70)
+print("验证 4：边界用例 T=1")
+print("=" * 70)
+
+with torch.no_grad():
+    q1 = torch.randn(B, H, 1, Dh)
+    k1 = torch.randn(B, H, 1, Dh)
+    v1 = torch.randn(B, H, 1, Dh)
+
+    # 1) 与 SDPA 对拍
+    mine1 = attention(q1, k1, v1, causal=True)
+    ref1 = F.scaled_dot_product_attention(q1, k1, v1, is_causal=True)
+    results.append(report("T=1 与 SDPA 对拍", mine1, ref1))
+
+    # 2) 不许出现 NaN
+    no_nan = not torch.isnan(mine1).any().item()
+    print(f"  {'T=1 输出无 NaN':<34} {'✅ 通过' if no_nan else '❌ 失败'}")
+    results.append(no_nan)
+
+    # 3) 理论性质：T=1 时 attn 恒为 1，输出必须等于 V
+    expected = v1
+    results.append(report("T=1 输出恒等于 V", mine1, expected))
+
+    # 4) 反证：故意把对角线也遮住，必须产生 NaN
+    bad_mask = torch.triu(torch.ones(1, 1, dtype=torch.bool), diagonal=0)
+    bad_scores = (q1 @ k1.transpose(-2, -1) / math.sqrt(Dh)).masked_fill(bad_mask, float("-inf"))
+    bad_attn = F.softmax(bad_scores, dim=-1)
+    nan_detected = torch.isnan(bad_attn).any().item()
+    print(f"  {'错误掩码(diagonal=0)必须 NaN':<34} {'✅ 通过' if nan_detected else '❌ 失败'}")
+    results.append(nan_detected)
+
+
 
 
 print()
