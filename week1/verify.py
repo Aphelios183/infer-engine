@@ -40,7 +40,7 @@ print("=" * 70)
 print("验证 1：与 F.scaled_dot_product_attention 对比")
 print("=" * 70)
 
-torch.manual_seed(0)
+torch.manual_seed(42)
 B, T, C, H = 2, 16, 64, 4
 Dh = C // H
 

@@ -46,7 +46,7 @@ def attention(q, k, v, causal: bool = True):
     # 2. 遮罩。填 -inf 而非 0，因为 exp(0)=1 会给出真实权重。
     if causal:
         t_q, t_k = scores.size(-2), scores.size(-1)
-        mask = build_causal_mask(t_k, device=scores.device)[-t_q:, :]
+        mask = build_causal_mask(t_k, device=scores.device)[-t_q:, :]#保证训练阶段得到完整下三角掩码，推理生成阶段取掩码矩阵最后一行，保证当前token看到历史所有token
         scores = scores.masked_fill(mask, float("-inf"))
 
     # 3. 归一化 + 加权求和。dim=-1 表示对 key 维归一化。

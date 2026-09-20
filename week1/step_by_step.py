@@ -33,7 +33,7 @@ print("=" * 70)
 print("第 0 步：准备输入")
 print("=" * 70)
 
-torch.manual_seed(0)
+torch.manual_seed(42)
 
 B, T, C, H = 2, 4, 8, 2          # 故意用很小的数，方便肉眼检查
 Dh = C // H                       # = 4
