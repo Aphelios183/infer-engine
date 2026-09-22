@@ -79,7 +79,7 @@ CPU 与 GPU 大量重叠：**不把 CPU 提交与 stream 区间相加；也不�
 
 打开 `T64_eager.operators.txt`：
 
-1. 先找 `aten::linear`、`aten::mm/bmm`、`aten::softmax`、`aten::triu`、`aten::masked_fill`、`aten::clone/copy_`。
+1. 先找 `aten::linear`、`aten::mm/bmm`、`aten::softmax`、`aten::triu`、`aten::masked_fill`、`aten::clone/copy_`。aten为pytorch的C++张量库
 2. 看 calls：一次 MHA 拆成了多少次小操作？哪些操作没有大矩阵计算，却每轮都重复？
 3. 分开看 CPU self time 与 GPU kernel 表。`total` 可包含子算子时间，父子行相加会重复统计。GPU 表只统计 trace 中的实际 kernel，不把覆盖多个 kernel 的阶段标记计为额外计算。
 4. 不要看到 `cudaDeviceSynchronize` 占 CPU 时间多就认定“同步函数计算很慢”：它往往在等之前排入队列的 GPU 工作完成。
@@ -127,12 +127,16 @@ CUDA Graph 也改变了内存分配复用方式。SDPA 默认自动选择后端�
 用本次数据填写，先写证据再写结论：
 
 1. T=64 的 eager Wall 为 ___ ms，Graph 为 ___ ms，加速 ___ 倍；原始重复样本波动为 ___。
-2. eager 与 Graph 的 kernel 数分别为 ___ / ___；如果采集不完整，写“无法比较”。
-3. cached_mask 是否更快？消失了哪些操作？如果差异落在波动范围内，写“暂不能确认收益”。
+2. eager 与 Graph 的 kernel 数分别为 _15__ / _17__；如果采集不完整，写“无法比较”。
+3. cached_mask 是否更快？消失了哪些操作？如果差异落在波动范围内，写“暂不能确认收益”。kernel数每forward消失了两个，正好是构造mask的，省掉的是**"造 mask"
 4. T=1024 最耗 GPU 时间的三种 kernel 是什么？对应代码的哪几步？
+排名	kernel	总时长	占比	对应代码
+1	softmax_warp_forward<...,10,false,false>	2227.98 us	26.2%	第 05 步 F.softmax(scores, dim=-1)（mha.py:53）
+2	elementwise_kernel<128,2,...masked_fill_kernel...>	2060.84 us	24.2%	第 04 步 scores.masked_fill(mask, -inf)（mha.py:50）
+3	vectorized_elementwise_kernel<4, BUnaryFunctor<MulFunctor>>	2014.15 us	23.7%	第 02 步的 / math.sqrt(dh)（mha.py:44）
 5. CPU self time 最大的操作是否对应 GPU kernel 时间最多的计算？为什么？
 6. 用三句话写“观察到什么、支持什么、还不能证明什么”。
-
+短序列由主机侧逐操作提交/调度路径限制推进速度，这部分可以用 Graph 消除；长序列由 GPU 执行限制，Graph 无从下手。
 能解释上述六项，就完成 Week 1 的性能分析部分，可以进入 KV Cache。
 
 参考：
