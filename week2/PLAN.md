@@ -1,6 +1,6 @@
 # Week 2 学习计划：从 KV Cache 正确性到性能证据
 
-更新日期：2026-09-24。当前进入 Lesson 3；脚本与操作说明已准备。按用户要求暂不运行正式性能实验，不填写预设收益。
+更新日期：2026-09-24。Lesson 3 已在低负载 GPU 1（L40）完成三次性能对照，原始数据与报告见 LESSON_03_RESULTS.md；待你阅读解释，尚未宣告全部学习验收完成。
 
 ## 本周目标
 
@@ -12,7 +12,7 @@
 |---|---|---|---|
 | Lesson 1 | 形状、增量 Attention、因果 mask | 已学习，第三课开头复习两个易错点 | 新 scores 包含历史和新 K；可见性由绝对位置决定 |
 | Lesson 2 | append/view/reset、边界保护 | 手写三个函数已通过接入测试 | 历史 K/V 不变、错误不破坏状态、重置隔离、完整重算对拍 |
-| Lesson 3 | Prefill/Decode 公平计时与结果解释 | 脚本已准备，正式实验暂不运行 | 正确性门槛、同步计时、多长度原始数据、解释有效范围 |
+| Lesson 3 | Prefill/Decode 公平计时与结果解释 | GPU 对照与报告已完成，待阅读解释 | 正确性门槛、同步计时、多长度原始数据、解释有效范围 |
 | Lesson 4 | 有效/预分配显存与容量取舍 | 待开始 | 计算字节、说明预分配代价和不同长度 batch 的限制 |
 
 Lesson 2 的测试边界：kv_cache_exercise.py 当前提供独立 append/view/reset 函数；验收时在内存中接入参考类的初始化和属性，6 项 CPU 测试通过，并额外检查了满容量下历史 K/V 和新增后缀。完整类封装尚未完成；mask/Attention 等仍是参考代码，不能算作全部由你手写或全部经过 GPU 验收。
@@ -27,7 +27,7 @@ Lesson 2 的测试边界：kv_cache_exercise.py 当前提供独立 append/view/r
 6. 整理计划中的 LESSON_03_RESULTS.md：环境、命令、正确性、原始数据、结论、限制。
 7. 需要解释现象时，再单独 profile；不把 profiler 运行时的耗时填入正式基准表。
 
-benchmark_kv_cache.py 和 test_benchmark_kv_cache.py 已创建，操作步骤见 BENCHMARK_GUIDE.md。默认只显示计划，显式加 --run 才测量。仅执行小规模 CPU 单元验证，不生成正式性能结果；LESSON_03_RESULTS.md 待正式实验后创建。手写函数和参考计算路径保持不变。
+benchmark_kv_cache.py 默认只显示计划，显式加 --run 才测量。此次 GPU 正确性 6 项通过，并完成三次相同配置的性能运行，每次每个 L 测量 10 轮。报告见 LESSON_03_RESULTS.md，原始 JSON 保存在 results/；手写函数和参考计算路径未修改。
 
 ## 文件导航
 

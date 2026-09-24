@@ -91,7 +91,7 @@ native_core/src/decoder_kv.cpp
 
 ## 第二周当前计划
 
-2026-09-24：进入第三课，见 [Week 2 计划](week2/PLAN.md) 与 [Lesson 3：KV Cache 性能实验](week2/LESSON_03.md)。核心手写方法已接入参考类通过 CPU 验证；Prefill/Decode 性能实验尚未执行，第二周尚未完成。
+2026-09-24：第三课已完成三次 L40 Prefill/Decode 对照，见 [实验报告](week2/LESSON_03_RESULTS.md) 与 [Week 2 计划](week2/PLAN.md)。核心手写方法已接入参考类通过 CPU 验证；当前待阅读性能报告，第二周尚未全部完成。
 
 ## 进度
 
