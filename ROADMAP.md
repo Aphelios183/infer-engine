@@ -89,7 +89,12 @@ native_core/src/decoder_kv.cpp
 
 第一版以单卡为主。C++/CUDA 随主线补基础。
 
+## 第二周当前计划
+
+2026-09-24：进入第三课，见 [Week 2 计划](week2/PLAN.md) 与 [Lesson 3：KV Cache 性能实验](week2/LESSON_03.md)。核心手写方法已接入参考类通过 CPU 验证；Prefill/Decode 性能实验尚未执行，第二周尚未完成。
+
 ## 进度
+
 
 - [x] 环境就绪：`nanovllm` 环境（Python 3.11 + torch 2.5.1+cu124 + flash_attn 2.8.3）
 - [x] W1 MHA 实现：逐步拆解脚本、可复用模块、数值对拍、因果性检查、T=1 边界用例
