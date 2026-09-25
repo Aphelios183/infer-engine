@@ -91,11 +91,11 @@ native_core/src/decoder_kv.cpp
 
 ## 第二周当前计划
 
-2026-09-24：已完成三次 L40 Prefill/Decode 对照并讨论结果，见 [实验报告](week2/LESSON_03_RESULTS.md)。已学习容量、利用率与 GQA 估算；最终综合题尚有未完整作答项，随第三周模型配置练习复习，不标记为全项验收通过。
+2026-09-25：按用户确认，第二周学习任务已完成。核心缓存方法接入验证、三次 L40 性能对照、报告讨论及显存/容量综合题纠错均已完成，见 [第二周记录](week2/PLAN.md) 与 [实验报告](week2/LESSON_03_RESULTS.md)。完整独立类封装仍是可选整理项，不作为已实现功能。
 
 ## 第三周当前计划
 
-按用户要求进入 Week 3，详见 [Week 3：真实模型生成链路](week3/PLAN.md)。从已有 Qwen3-0.6B、本地 nano-vLLM 源码和 nanovllm 环境开始；先核查导入与兼容性，再做参考生成、缓存 logits 对拍和单请求跟踪。当前只完成计划与只读核查，尚未启动第三周模型推理。
+Week 3 当前进度见 [计划](week3/PLAN.md)。2026-09-25 已完成第一课配置/分词实验，尚未加载权重或生成文本；下一阶段亲手实现 infer-engine 的最小单请求生成循环，复用模型 forward 而不是以现成 generate() 代替自己的控制逻辑。nano-vLLM 作为对照，后续验证缓存 logits 并跟踪单请求生命周期。
 
 ## 进度
 
@@ -103,5 +103,5 @@ native_core/src/decoder_kv.cpp
 - [x] 环境就绪：`nanovllm` 环境（Python 3.11 + torch 2.5.1+cu124 + flash_attn 2.8.3）
 - [x] W1 MHA 实现：逐步拆解脚本、可复用模块、数值对拍、因果性检查、T=1 边界用例
 - [ ] W1 GPU 计时观察（seq_len 从 1 到 1024，理解 kernel launch 开销）
-- [x] W2 KV Cache：全量重算 vs 增量计算对照实验（报告见 week2/LESSON_03_RESULTS.md）
+- [x] W2 学习任务完成：KV Cache 核心方法、数值验证、性能实验、显存与容量练习（见 week2/PLAN.md）
 - [ ] W3 真实模型生成：计划已写入 week3/PLAN.md，待执行和验收
