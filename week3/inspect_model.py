@@ -5,25 +5,77 @@ import json
 from pathlib import Path
 
 
-def describe_config(config, batch=1, length=4096):
-    # 本课按 Qwen3 的显式 head_dim 计算，不套用 hidden_size / Q头数。
-    layers = config['num_hidden_layers']
-    q_heads = config['num_attention_heads']
-    kv_heads = config['num_key_value_heads']
-    head_dim = config['head_dim']
-    if any(type(v) is not int or v <= 0
-           for v in (batch, length, layers, q_heads, kv_heads, head_dim)):
-        raise ValueError('batch、length 和模型维度必须为正整数')
+def _positive_int(value, name):
+    if type(value) is not int or value <= 0:
+        raise ValueError(f'{name} 必须为正整数（不能是 bool）')
+    return value
+
+
+def describe_config(config, batch=1, length=4096, bytes_per_element=2):
+    """只算 Full Attention 的理论 K/V；不分配张量、不猜线性状态大小。"""
+    if not isinstance(config, dict):
+        raise ValueError('model_type 必须来自配置对象')
+    kind = config.get('model_type')
+    if kind == 'qwen3_5':
+        text = config.get('text_config')
+        if not isinstance(text, dict) or text.get('model_type') != 'qwen3_5_text':
+            raise ValueError('text_config.model_type 必须为 qwen3_5_text')
+    elif kind == 'qwen3':
+        text = config
+    else:
+        raise ValueError(f'不支持 model_type={kind!r}')
+
+    _positive_int(batch, 'batch')
+    _positive_int(length, 'length')
+    _positive_int(bytes_per_element, 'bytes_per_element')
+    for field in ('num_hidden_layers', 'hidden_size', 'num_attention_heads',
+                  'num_key_value_heads', 'head_dim', 'vocab_size'):
+        _positive_int(text.get(field), field)
+    layers = text['num_hidden_layers']
+    q_heads = text['num_attention_heads']
+    kv_heads = text['num_key_value_heads']
+    head_dim = text['head_dim']
     if q_heads % kv_heads:
-        raise ValueError('本课要求 Q 头数能被 KV 头数整除')
-    kv_bytes = 2 * layers * batch * length * kv_heads * head_dim * 2
-    return dict(layers=layers, hidden_size=config['hidden_size'],
+        raise ValueError('num_attention_heads 必须能被 num_key_value_heads 整除')
+
+    if kind == 'qwen3_5':
+        layer_types = text.get('layer_types')
+        if (not isinstance(layer_types, list) or len(layer_types) != layers
+                or any(not isinstance(t, str) or t not in
+                       ('full_attention', 'linear_attention') for t in layer_types)):
+            raise ValueError('layer_types 必须与层数一致，且只含 full_attention/linear_attention')
+        layer_types = list(layer_types)
+    else:
+        layer_types = ['full_attention'] * layers
+    full_indices = [i for i, t in enumerate(layer_types) if t == 'full_attention']
+    linear_indices = [i for i, t in enumerate(layer_types) if t == 'linear_attention']
+    linear_config = {}
+    if linear_indices:
+        for field in ('linear_num_key_heads', 'linear_num_value_heads',
+                      'linear_key_head_dim', 'linear_value_head_dim', 'linear_conv_kernel_dim'):
+            linear_config[field] = _positive_int(text.get(field), field)
+        linear_config['configured_state_dtype'] = text.get('mamba_ssm_dtype')
+
+    kv_bytes = 2 * len(full_indices) * batch * length * kv_heads * head_dim * bytes_per_element
+    return dict(model_type=kind, text_model_type=text.get('model_type'),
+                layers=layers, hidden_size=text['hidden_size'],
                 q_heads=q_heads, kv_heads=kv_heads, head_dim=head_dim,
                 q_heads_per_kv=q_heads // kv_heads,
                 q_projection_width=q_heads * head_dim,
+                q_projection_scope='query_features_only',
                 kv_projection_width=kv_heads * head_dim,
-                model_vocab_size=config['vocab_size'],
-                assumed_kv_dtype='BF16/FP16: 2 bytes per element',
+                model_vocab_size=text['vocab_size'],
+                layer_types=layer_types,
+                full_attention_layers=len(full_indices),
+                linear_attention_layers=len(linear_indices),
+                full_attention_layer_indices=full_indices,
+                linear_attention_layer_indices=linear_indices,
+                kv_scope='full_attention_only', linear_state_bytes=None,
+                linear_state_status='未测：未加载模型或创建状态张量',
+                linear_config=linear_config,
+                configured_weight_dtype=text.get('dtype', text.get('torch_dtype')),
+                bytes_per_element=bytes_per_element,
+                assumed_kv_dtype=f'假设每元素 {bytes_per_element} 字节；不是实测 dtype',
                 batch=batch, length=length, kv_bytes=kv_bytes,
                 kv_mib=kv_bytes / 1024**2)
 
