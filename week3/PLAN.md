@@ -1,137 +1,81 @@
-# Week 3：从单层 Attention 到真实模型生成
+# Week 3：Qwen3.5 从配置到单请求生成
 
-更新日期：2026-09-25。本周目标：用已有模型 forward 和 tokenizer，亲手实现 infer-engine 的最小单请求生成循环，并完成缓存正确性验证；nano-vLLM 是参照，不以调用其 generate() 作为自己的引擎交付。
+更新：2026-09-25。主线模型改为 **Qwen3.5-4B**，仍使用 nanovllm 环境。第二周已完成；旧 Qwen3-0.6B 实验仅保留为历史，不再作为当前课程验收。
 
-第一课 LESSON_01.md、inspect_model.py 与 ENVIRONMENT.md 已完成；配置/分词实验及新增 4 项测试通过。尚未加载权重或运行生成，以下生成循环、对拍及追踪仍待实现。
+当前课程工作区：`/home/ubuntu/infer-engine/.worktrees/qwen35-week3`，分支 `learn/qwen35-week3`。尚未合并到主目录，请从该工作区运行本课命令。
 
-## 1. 本周范围与起点
+## 学习方式
 
-第二周学习任务已于 2026-09-25 按用户确认完成，包括 MHA/KV Cache 基础、核心方法实现与验证、性能实验、GQA 显存估算和最终综合题纠错。第三周继续在真实模型配置中运用这些知识；具体代码复用边界见 week2/PLAN.md。
+每课按“读概念 → 预测结果 → 自己动手 → 运行验证 → 解释差异 → 验收”推进。
+脚本测试通过不等于你已经掌握；老师提供检查工具，你完成关键推导和练习。
+当前只交付 Lesson 1A 的配置实验与 Lesson 1B 的检查工具，不提前替你完成生成循环。
 
-本周只做：单卡、一个请求开始、短提示词、少量新 token；先看正确性与调用链，再看简单时序。不做调度算法改造、分页缓存实现、多卡、量化、CUDA kernel 或 InferLab C++ 重构。
+## 课程与工程任务对应
 
-建议总投入 12–16 小时，分 7 天推进。遇到兼容性问题保留一天缓冲，优先完成“一个请求能解释清楚”，不要靠增加功能凑进度。
+| 课程 | 核心问题 | 你要动手做什么 | 工程任务与进入条件 |
+| --- | --- | --- | --- |
+| Lesson 1A（当前） | 混合模型为什么不能全层套 KV 公式？ | 推导形状、枚举层索引、计算 Full Attention KV | Tasks 1–2：配置解析与离线检查工具已验证；完成本课问答 |
+| Lesson 1B | 文本怎样变成模型输入？ | 对比原文/模板、IDs、EOS、thinking 设置，检查编码一致性 | Task 2 工具 + Task 3 资产准备：真实新 tokenizer 尚未验证 |
+| Lesson 2 | 第一个输出 token 从哪里来？ | 先读一次 forward，再亲手写 prefill/decode/停止循环 | Tasks 3–5：固定模型资产，参考 forward，手写生成循环 |
+| Lesson 3 | 混合模型到底缓存了什么？ | 检查 KV 与 recurrent/conv state 的形状、dtype、存储及请求隔离 | Task 6：实际状态快照，不只读配置猜测 |
+| Lesson 4 | 增量计算真的正确吗？ | 固定相同 token 前缀，逐步比较全重算/缓存路径 logits | Task 7：teacher forcing，独立校准并冻结容差 |
+| 本周验收 | 别人能否复现你的结论？ | 三条短提示词、停止原因、环境与原始结果报告 | Task 8：可复现实验与限制说明 |
 
-## 2. 已核查的真实环境
+设计与详细实现计划供查阅，不要求初学者先读完：
+[设计](../docs/superpowers/specs/2026-09-25-qwen35-text-baseline-design.md)、
+[实现计划](../docs/superpowers/plans/2026-09-25-qwen35-text-baseline.md)。
 
-| 项目 | 当前观察 |
-|---|---|
-| 主仓库 | /home/ubuntu/infer-engine |
-| 环境解释器 | /home/ubuntu/enter/envs/nanovllm/bin/python |
-| 本地模型 | /home/ubuntu/huggingface/Qwen3-0.6B |
-| 模型文件 | config.json、tokenizer 文件、model.safetensors 均存在；尚未加载验证权重 |
-| 初始阅读源码 | /home/ubuntu/t1/nano-vllm-main/nano-vllm-main |
-| 另一份源码 | /home/ubuntu/t1/nano-vllm-p0；暂不混用，差异尚未核查 |
-| Transformers | 环境中为 5.8.0；模型配置记录的保存版本为 4.51.0，版本不同不等于必然不兼容 |
-| nanovllm 导入 | 从主仓库执行 find_spec('nanovllm') 返回 None，源码存在不等于此环境已能导入 |
+## 现在从哪里开始
 
-本周先复用本地权重，不下载新模型。先用本次任务的 PYTHONPATH 或明确源码入口解决导入定位，不直接 pip install、升级或降级已有环境。确需依赖变更时，先给出错误证据与最小变更方案再确认。
+先读 [Lesson 01](LESSON_01.md) 第 1–5 节，再执行：
 
-该 nano-vLLM 分支的 SamplingParams 明确禁止 temperature=0；sampler.py 使用带温度随机采样，并有 torch.compile。不能照搬“temperature=0 就是贪心”的其他库用法。enforce_eager=True 关闭该分支的 CUDA Graph 路径，不等于禁用了所有编译。
-
-## 3. 这周需要串起来的链路
-
-```text
-用户文本
-  → 一次 chat template 格式化
-  → tokenizer 编码成 token IDs
-  → 请求创建与 Prefill
-  → embedding → 多层 Transformer → 最终归一化 / LM head
-  → 最后有效位置的 logits
-  → 选出下一个 token
-  → 把选出的 token 作为下一步输入，使用历史 KV
-  → 重复 Decode，直到 EOS 或新 token 数达到上限
-  → 输出 token IDs 解码为文本，请求结束并回收逻辑缓存资源
+```bash
+cd /home/ubuntu/infer-engine/.worktrees/qwen35-week3
+CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m week3.inspect_model --config-only --config-file week3/fixtures/qwen35_4b_config_minimal.json
 ```
 
-注意：Prefill 的最后位置 logits 已经用于选出第一个输出 token；只有把这个输出 token 再送入模型处理时，它自己的 K/V 才写入缓存。停止时最后采样出的 token 未必已经再经过一次 forward。
+这是裁剪后的教学配置，不是已下载的模型：输出中 `is_teaching_fixture=true`。
+重点找出 `hidden_size`、两类层的数量与原始索引、`kv_mib`、`linear_state_bytes`。
+当前不用 GPU，不用下载权重，也不改依赖。
 
-## 4. 七天安排
+你手写一段遍历 `layer_types` 的代码，将两类层的原始索引分别列出；先自己写，再与脚本输出对照。不要修改 fixture 来“配合答案”。
 
-| 天 | 核心问题 | 动手任务 | 待产出与验收 |
-|---|---|---|---|
-| 1 | 模型配置和 token 到底是什么？ | 确认源码导入路径；读取本地 config；CPU 加载 tokenizer，观察模板、IDs、EOS 和解码 | ENVIRONMENT.md、inspect_model.py；记录真实路径与版本，解释文本与 token 数不相等 |
-| 2 | 如何亲手驱动模型生成？ | 参考路径只作对照；在自己的循环中调用 forward，管理 Prefill/Decode、缓存传递、argmax、EOS 和长度停止 | minimal_generate.py；不依赖现成 generate() 驱动主循环，记录输入/输出 IDs、缓存长度和停止原因 |
-| 3 | 真实模型缓存是否与完整重算等价？ | 同模型、同 dtype、同一固定 token 前缀，比较 use_cache=False 全前缀与缓存增量的最后位置 logits | verify_generation.py；逐步记录误差、top-1 和有效长度，不只比较最终文本 |
-| 4 | nano-vLLM 中一次请求走过哪些函数？ | 先以原生支持的正温度跑通相同提示词；沿入口、调度、runner、模型、采样、结束追踪 | trace_request.py、REQUEST_TRACE.md；能定位 Prefill/Decode 转换和停止条件 |
-| 5 | 教学实现与真实模型差在哪？ | 读 Qwen3 的 GQA、RoPE、RMSNorm、MLP、residual 和投影形状；读取真实缓存布局 | MODEL_NOTES.md；算出本地模型的 KV 字节，解释配置中的 head_dim |
-| 6 | 能否独立复现和解释？ | 三条短提示词重复验证；记录设置、源码版本/指纹、错误与解决过程 | GENERATION_REPORT.md；证明运行可复现，明确未测/未对齐部分 |
-| 7 | 综合验收与缓冲 | 修补薄弱点；独立跟踪一个新提示词；为下一周提出请求调度问题 | 完成验收清单，决定是否进入 Week 4 |
+## 两种进度必须分开
 
-除已记录的第一课文件外，其余文件名仍是待实现交付物。最小循环允许复用模型计算和底层缓存实现，但必须清楚标注复用边界；本周不把它宣称为自研模型算子或完整多请求引擎。
+工程进度：
 
-## 5. 第一天具体怎么学
+- [x] 显式区分 Qwen3 与 Qwen3.5 嵌套配置，验证维度与层类型。
+- [x] 只按 Full Attention 层计算 KV，保留原始层索引。
+- [x] config-only 路径不导入 torch/transformers。
+- [x] tokenizer 一致性检查工具及模拟 tokenizer 测试。
+- [ ] Qwen3.5-4B 的真实 tokenizer 资产与集成验证。
+- [ ] 权重加载、真实 forward、手写生成循环。
+- [ ] 混合状态快照、逐步 logits 对拍、验收报告。
 
-先读 /home/ubuntu/huggingface/Qwen3-0.6B/config.json，不加载模型到 GPU。已看到的配置是：
+你的掌握情况（答题后逐项确认，不因为工具已写好而打勾）：
 
-```text
-layers = 28
-hidden_size = 1024
-query_heads = 16
-kv_heads = 8
-head_dim = 128
-vocab_size = 151936
-配置 dtype = bfloat16
+- [ ] 能写出 token IDs、embedding 输出与单 token decode 的形状。
+- [ ] 能用实际 head_dim 推导 Full Attention KV 字节数。
+- [ ] 能解释未测的 linear state 不等于零内存。
+- [ ] 能解释 chat template、tokenizer、EOS 和 thinking 开关。
+- [ ] 能解释 prefill 产生首 token，以及该 token 何时写入状态。
+- [ ] 能解释为何数值对拍要让两条路径接收同一个 token。
+
+## 验证命令与下一课门槛
+
+本课离线单元测试：
+
+```bash
+CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m unittest week3.test_inspect_model -v
 ```
 
-第一项重要区别：这里 1024/16=64，但模型显式配置 head_dim=128。不要强行套用第一周教学 MHA 的 C/H；当前 qwen3.py 优先采用配置中的 head_dim，Q 投影总宽度是 16×128，再经输出投影回到 hidden_size。
+默认跳过的真实 tokenizer 测试不算通过。完成 Lesson 1A 问答后，进入 Lesson 1B，准备带来源与版本记录的真实 tokenizer 资产；不要复用旧模型的 token 数和 EOS 作为新模型答案。
 
-当天练习：
+## 边界与后续衔接
 
-1. 本地模型每个 Q 头如何共享 K/V？每组有几个 Q 头？
-2. BF16 每元素 2 字节，单请求缓存 4096 个位置时，全 28 层 KV 需要多少 MiB？按层累加，不用旧题的 32 层配置。
-3. 同一条短文本格式化前后分别有哪些 token？模型真正接收的是哪一串 IDs？
-4. 输入 L 个 token 的参考模型 logits 形状是什么？为什么取最后有效位置来选下一个 token？
+本周先建立 Transformers 参考路径和自己的控制循环；这不等于已经完成 nano-vLLM 原生 Qwen3.5 适配。随后逐步把模型执行、混合状态管理、请求生命周期接入引擎。
+先单卡、单请求、短文本，正确性通过后再增加并发；暂不做多模态、FP8、MTP、KV 压缩、多卡与 C++ 重写。
 
-tokenizer 实验固定一条短提示词，比如“用一句话解释 KV Cache”。明确记录 chat template 与 thinking 设置；如果本地模板支持关闭 thinking，首轮采用关闭并记录，避免把思考内容长度误当模型卡住。模板只应用一次，并检查后续编码是否重复添加 special tokens。
-
-## 6. 正确性对拍必须怎么设计
-
-先在同一个 Transformers 模型内对比全前缀重算和缓存增量。起步 batch=1、无 padding，先避开复杂 mask 和变长批处理。
-
-- 固定模型权重、dtype、模板和一份输入 token IDs，eval + inference_mode；缓存每个独立用例重置。
-- 先比较 Prefill，再把同一个下一 token 分别送入两条路径，比较对应位置 logits。固定前缀（teacher forcing），防止一次选 token 不同后，后续输入都不相同。
-- 记录最大绝对误差、适当的相对误差和 top-1 结果。容差要结合实际 dtype 和算子路径声明，不盲用第二周 FP32 阈值，也不为了通过而任意放宽。
-- argmax 不同但 logits 接近时，检查前两名分数间隔；只看生成文本相同也不能证明张量正确。
-- 按当前 Transformers 版本确认缓存对象、position/mask 接口，不假定旧版 tuple API 一定适用。RoPE 的位置必须随着历史长度正确增长。
-
-跨 Transformers 与 nano-vLLM 的 logits 对拍是进阶目标，不是首日门槛。若做对照，需在采样前捕获 logits，并确保相同输入 IDs、位置、权重和精度；不能用两个独立随机采样得到的文本是否相同判断正确性。固定随机种子也不保证不同实现采样出相同 token。
-
-本周无需为了贪心采样修改 nano-vLLM 的 sampler。参考手动循环可用 argmax；nano-vLLM 先保持其原生正温度采样，清楚说明两者用途不同。
-
-## 7. 源码阅读顺序
-
-以下文件相对于 /home/ubuntu/t1/nano-vllm-main/nano-vllm-main，均已确认存在：
-
-1. example.py → nanovllm/llm.py：外部如何发起生成。
-2. nanovllm/engine/llm_engine.py：add_request、step、generate、结束判断。
-3. nanovllm/engine/sequence.py、scheduler.py：本周只跟踪单请求状态，不实现新调度策略。
-4. nanovllm/engine/model_runner.py：prepare_prefill、prepare_decode、run_model、run。
-5. nanovllm/models/qwen3.py：embedding、decoder layers、Attention/MLP、logits。
-6. nanovllm/layers/attention.py、rotary_embedding.py、sampler.py：缓存位置、RoPE、采样。
-7. nanovllm/engine/block_manager.py：先知道何时分配和归还逻辑块，分页算法留到第五周。
-
-跟踪日志字段至少包括：请求标识、阶段、输入位置数、输入 token ID、position、采样出的 token ID、当前输出数、停止原因。只截取少量步骤，日志运行与性能测量分开。
-
-## 8. 运行边界与常见陷阱
-
-- 先检查 GPU 当前负载，不能沿用第二周“GPU 1 空闲”的结论；不终止其他人的任务。
-- 首次 batch=1、短提示词、max_tokens=16 或 32、tensor_parallel_size=1。nano-vLLM 首轮采用 enforce_eager=True 便于跟踪。
-- 当前分支默认 gpu_memory_utilization=0.9，会主动分配较多 KV 空间。启动前明确配置适合本次小实验的预算、max_model_len 与批处理上限，并核查能分配到至少所需的块；不直接运行示例的默认大预算。
-- 模型加载、编译、预热与实际生成分开记录。generate 整段耗时不是 TTFT；没有逐 token 时间戳时不报告 TPOT。
-- BF16 权重文件大小、模型参数显存、有效 KV 字节、预分配 KV 和 nvidia-smi 进程占用不是同一个指标。
-- 不直接覆盖两份源码中的用户改动。学习脚本与报告落在 /home/ubuntu/infer-engine/week3，引用外部源码时记录路径和版本；必要插桩先确认干净状态并保留改动边界。
-- 模型能说出一句话只是链路跑通，不代表数值对拍、性能或请求生命周期验证全部完成。
-
-## 9. 本周验收
-
-- [ ] 记录实际加载的模型、tokenizer、nano-vLLM 源码路径和依赖版本。
-- [ ] 能解释模板、token IDs、embedding、decoder、logits、选 token 和解码文本的关系。
-- [ ] 亲手实现最小生成循环，不用现成 generate() 代替主流程；跑通至少三条短提示词，保留输入/输出 IDs、参数和停止原因。
-- [ ] 解释第一个输出 token 来自 Prefill，以及它何时写入 KV。
-- [ ] 在真实参考模型内完成全重算与缓存增量逐步 logits 对拍。
-- [ ] 跟踪 nano-vLLM 中一次请求从创建到结束，指出 KV 逻辑资源回收位置。
-- [ ] 正确计算本地 28 层 GQA 模型的缓存字节，区分有效/预分配/进程显存。
-- [ ] 汇总限制和未完成项，不将原生功能写成自己的新增优化。
-
-达到这些条件后，Week 4 进入多个长短请求的调度与生命周期观察。若只剩跨框架高精度 logits 对拍未完成，可记录为进阶项；但不能跳过同模型缓存正确性和单请求链路理解。
+既有环境保持不变。加载模型前重新检查 GPU 使用情况，不沿用过去的空闲卡编号。
+完整记录见 [环境与验证](ENVIRONMENT.md)；旧课保存在 [Qwen3 历史记录](HISTORICAL_QWEN3_06B.md)。
+两个月是时间预算，不是全部高级功能都必须完成的承诺；若混合状态正确性未通过，先收缩范围，不跳过验收。
