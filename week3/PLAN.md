@@ -2,7 +2,7 @@
 
 更新：2026-09-25。主线模型改为 **Qwen3.5-4B**，仍使用 nanovllm 环境。第二周已完成；旧 Qwen3-0.6B 实验仅保留为历史，不再作为当前课程验收。
 
-当前课程工作区：`/home/ubuntu/infer-engine/.worktrees/qwen35-week3`，分支 `learn/qwen35-week3`。尚未合并到主目录，请从该工作区运行本课命令。
+当前课程工作区：`/home/ubuntu/infer-engine`，分支 `main`。最新课程已整合回主目录；直接从这里运行本课命令。
 
 ## 学习方式
 
@@ -22,15 +22,15 @@
 | 本周验收 | 别人能否复现你的结论？ | 三条短提示词、停止原因、环境与原始结果报告 | Task 8：可复现实验与限制说明 |
 
 设计与详细实现计划供查阅，不要求初学者先读完：
-[设计](../docs/superpowers/specs/2026-09-25-qwen35-text-baseline-design.md)、
-[实现计划](../docs/superpowers/plans/2026-09-25-qwen35-text-baseline.md)。
+[设计](../archive/development/superpowers/specs/2026-09-25-qwen35-text-baseline-design.md)、
+[实现计划](../archive/development/superpowers/plans/2026-09-25-qwen35-text-baseline.md)。
 
 ## 现在从哪里开始
 
 先读 [Lesson 01](LESSON_01.md) 第 1–5 节，再执行：
 
 ```bash
-cd /home/ubuntu/infer-engine/.worktrees/qwen35-week3
+cd /home/ubuntu/infer-engine
 CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m week3.inspect_model --config-only --config-file week3/fixtures/qwen35_4b_config_minimal.json
 ```
 
@@ -77,5 +77,5 @@ CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/py
 先单卡、单请求、短文本，正确性通过后再增加并发；暂不做多模态、FP8、MTP、KV 压缩、多卡与 C++ 重写。
 
 既有环境保持不变。加载模型前重新检查 GPU 使用情况，不沿用过去的空闲卡编号。
-完整记录见 [环境与验证](ENVIRONMENT.md)；旧课保存在 [Qwen3 历史记录](HISTORICAL_QWEN3_06B.md)。
+完整记录见 [环境与验证](ENVIRONMENT.md)；旧课保存在 [Qwen3 历史记录](../archive/old-models/QWEN3_06B.md)。
 两个月是时间预算，不是全部高级功能都必须完成的承诺；若混合状态正确性未通过，先收缩范围，不跳过验收。

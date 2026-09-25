@@ -1,12 +1,12 @@
 # Week 3 环境与证据边界
 
-更新：2026-09-25。当前目标 Qwen3.5-4B；原 Qwen3-0.6B 记录已归档到 [历史记录](HISTORICAL_QWEN3_06B.md)。
+更新：2026-09-25。当前目标 Qwen3.5-4B；原 Qwen3-0.6B 记录已归档到 [历史记录](../archive/old-models/QWEN3_06B.md)。
 
 ## 工作区
 
 - 主目录：/home/ubuntu/infer-engine。
-- 课程迁移工作区：/home/ubuntu/infer-engine/.worktrees/qwen35-week3。
-- 分支：learn/qwen35-week3；主目录尚未合并课程改动。
+- 当前学习工作区：主目录；原隔离工作区整合后移除。
+- 当前分支：main；Qwen3.5 第一课已合并，旧资料与开发记录归档到 archive/。
 - 创建工作区时，原有7个修改/未跟踪学习文件按原内容复制并逐个比较，在隔离分支保存基线；没有覆盖主目录的学习内容。
 
 ## 已核查运行环境
@@ -35,7 +35,7 @@ Qwen3.5-4B 的目标目录尚未作为可用资产验证；教学 fixture 不是
 
 ## 复现
 
-在上述隔离工作区运行：
+在主目录运行：
 
 ```bash
 CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 OMP_NUM_THREADS=1 PYTHONPATH=week1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m unittest week1.test_profile_attention week2.verify_kv_cache week2.test_benchmark_kv_cache week3.test_inspect_model week3.test_tokenizer_integration -v

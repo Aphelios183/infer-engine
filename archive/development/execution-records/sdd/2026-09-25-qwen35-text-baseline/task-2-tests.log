@@ -1,0 +1,45 @@
+test_interval_union_handles_overlap (week1.test_profile_attention.ProfileExperimentTest.test_interval_union_handles_overlap) ... ok
+test_missing_cuda_trace_is_not_zero_cost (week1.test_profile_attention.ProfileExperimentTest.test_missing_cuda_trace_is_not_zero_cost) ... ok
+test_trace_does_not_count_cpu_scopes_as_gpu (week1.test_profile_attention.ProfileExperimentTest.test_trace_does_not_count_cpu_scopes_as_gpu) ... ok
+test_variants_share_weights_and_outputs (week1.test_profile_attention.ProfileExperimentTest.test_variants_share_weights_and_outputs) ... ok
+test_bad_append_preserves_existing_contents (week2.verify_kv_cache.CacheTest.test_bad_append_preserves_existing_contents) ... ok
+test_every_chunk_matches_full_recompute (week2.verify_kv_cache.CacheTest.test_every_chunk_matches_full_recompute) ... ok
+test_invalid_capacity_rejected (week2.verify_kv_cache.CacheTest.test_invalid_capacity_rejected) ... ok
+test_rectangular_mask_uses_absolute_positions (week2.verify_kv_cache.CacheTest.test_rectangular_mask_uses_absolute_positions) ... ok
+test_reset_isolates_independent_sequence (week2.verify_kv_cache.CacheTest.test_reset_isolates_independent_sequence) ... ok
+test_storage_is_reused_and_bytes_are_counted (week2.verify_kv_cache.CacheTest.test_storage_is_reused_and_bytes_are_counted) ... ok
+test_each_cache_round_resets_and_counts_decode_writes (week2.test_benchmark_kv_cache.BenchmarkTest.test_each_cache_round_resets_and_counts_decode_writes) ... ok
+test_invalid_workloads_are_rejected (week2.test_benchmark_kv_cache.BenchmarkTest.test_invalid_workloads_are_rejected) ... ok
+test_measured_rows_exclude_warmup (week2.test_benchmark_kv_cache.BenchmarkTest.test_measured_rows_exclude_warmup) ... ok
+test_prefill_and_all_decode_outputs_match (week2.test_benchmark_kv_cache.BenchmarkTest.test_prefill_and_all_decode_outputs_match) ... ok
+test_total_summary_uses_per_round_sums (week2.test_benchmark_kv_cache.BenchmarkTest.test_total_summary_uses_per_round_sums) ... ok
+test_workload_uses_full_prefix_or_one_new_token (week2.test_benchmark_kv_cache.BenchmarkTest.test_workload_uses_full_prefix_or_one_new_token) ... ok
+test_batch_length_and_element_size_scale_only_kv (week3.test_inspect_model.HybridConfigTest.test_batch_length_and_element_size_scale_only_kv) ... ok
+test_describe_does_not_mutate_input (week3.test_inspect_model.HybridConfigTest.test_describe_does_not_mutate_input) ... ok
+test_explicit_head_dim_and_gate_do_not_inflate_query_features (week3.test_inspect_model.HybridConfigTest.test_explicit_head_dim_and_gate_do_not_inflate_query_features) ... ok
+test_invalid_gqa_ratio_is_rejected (week3.test_inspect_model.HybridConfigTest.test_invalid_gqa_ratio_is_rejected) ... ok
+test_layer_list_must_match_count_and_known_types (week3.test_inspect_model.HybridConfigTest.test_layer_list_must_match_count_and_known_types) ... ok
+test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) ... ok
+test_nested_config_must_be_a_text_config (week3.test_inspect_model.HybridConfigTest.test_nested_config_must_be_a_text_config) ... ok
+test_only_full_attention_layers_contribute_kv_bytes (week3.test_inspect_model.HybridConfigTest.test_only_full_attention_layers_contribute_kv_bytes) ... ok
+test_runtime_sizes_reject_bool_fractional_and_nonpositive (week3.test_inspect_model.HybridConfigTest.test_runtime_sizes_reject_bool_fractional_and_nonpositive) ... ok
+test_unknown_and_missing_model_types_are_rejected (week3.test_inspect_model.HybridConfigTest.test_unknown_and_missing_model_types_are_rejected) ... ok
+test_batch_and_length_scale_cache_not_query_heads (week3.test_inspect_model.InspectTest.test_batch_and_length_scale_cache_not_query_heads) ... ok
+test_explicit_head_dim_controls_projection_and_kv_bytes (week3.test_inspect_model.InspectTest.test_explicit_head_dim_controls_projection_and_kv_bytes) ... ok
+test_invalid_dimensions_rejected (week3.test_inspect_model.InspectTest.test_invalid_dimensions_rejected) ... ok
+test_cli_rejects_missing_bad_config_and_wrong_mode (week3.test_inspect_model.OfflineCliTest.test_cli_rejects_missing_bad_config_and_wrong_mode) ... ok
+test_config_only_reads_directory_without_tokenizer (week3.test_inspect_model.OfflineCliTest.test_config_only_reads_directory_without_tokenizer) ... ok
+test_fixture_mode_does_not_import_torch_or_transformers (week3.test_inspect_model.OfflineCliTest.test_fixture_mode_does_not_import_torch_or_transformers) ... ok
+test_different_template_encodings_are_rejected (week3.test_inspect_model.PromptTest.test_different_template_encodings_are_rejected) ... ok
+test_empty_nontext_and_nonboolean_inputs_rejected (week3.test_inspect_model.PromptTest.test_empty_nontext_and_nonboolean_inputs_rejected) ... ok
+test_ignored_thinking_switch_is_not_claimed_as_supported (week3.test_inspect_model.PromptTest.test_ignored_thinking_switch_is_not_claimed_as_supported) ... ok
+test_mapping_and_list_encode_template_once (week3.test_inspect_model.PromptTest.test_mapping_and_list_encode_template_once) ... ok
+test_roundtrip_difference_is_rejected (week3.test_inspect_model.PromptTest.test_roundtrip_difference_is_rejected) ... ok
+test_thinking_on_is_recorded_and_changes_rendering (week3.test_inspect_model.PromptTest.test_thinking_on_is_recorded_and_changes_rendering) ... ok
+test_qwen35_target (week3.test_tokenizer_integration.TokenizerIntegrationTest.test_qwen35_target) ... skipped '未开启真实 tokenizer 集成检查；SKIP 不表示模型已验证'
+test_qwen3_history (week3.test_tokenizer_integration.TokenizerIntegrationTest.test_qwen3_history) ... skipped '未开启真实 tokenizer 集成检查；SKIP 不表示模型已验证'
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.101s
+
+OK (skipped=2)

@@ -100,7 +100,7 @@ native_core/src/decoder_kv.cpp
 
 Week 3 当前进度见 [逐课计划](week3/PLAN.md) 与 [第一课](week3/LESSON_01.md)。当前交付 Lesson 1A 的配置检查与练习，以及 Lesson 1B 的 tokenizer 检查工具；Qwen3.5 真实 tokenizer、权重与生成尚未验证。旧 Qwen3-0.6B 实验归档，不等于新模型课程已通过。
 
-本次改动位于 /home/ubuntu/infer-engine/.worktrees/qwen35-week3（learn/qwen35-week3），尚未合并到主目录。每课完成问答与实作验收后再继续，不一次性代写全部课程。
+最新课程已合并到 /home/ubuntu/infer-engine（main），隔离工作区整合后移除。每课完成问答与实作验收后再继续，不一次性代写全部课程。
 
 ## 进度
 

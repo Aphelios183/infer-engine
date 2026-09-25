@@ -1,0 +1,354 @@
+test_batch_length_and_element_size_scale_only_kv (week3.test_inspect_model.HybridConfigTest.test_batch_length_and_element_size_scale_only_kv) ... FAIL
+test_describe_does_not_mutate_input (week3.test_inspect_model.HybridConfigTest.test_describe_does_not_mutate_input) ... FAIL
+test_explicit_head_dim_and_gate_do_not_inflate_query_features (week3.test_inspect_model.HybridConfigTest.test_explicit_head_dim_and_gate_do_not_inflate_query_features) ... FAIL
+test_invalid_gqa_ratio_is_rejected (week3.test_inspect_model.HybridConfigTest.test_invalid_gqa_ratio_is_rejected) ... FAIL
+test_layer_list_must_match_count_and_known_types (week3.test_inspect_model.HybridConfigTest.test_layer_list_must_match_count_and_known_types) ... FAIL
+test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) ... 
+  test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=None) ... FAIL
+  test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=True) ... FAIL
+  test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=0) ... FAIL
+  test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=-1) ... FAIL
+  test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=1.5) ... FAIL
+  test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value='4') ... FAIL
+test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) ... FAIL
+test_nested_config_must_be_a_text_config (week3.test_inspect_model.HybridConfigTest.test_nested_config_must_be_a_text_config) ... FAIL
+test_only_full_attention_layers_contribute_kv_bytes (week3.test_inspect_model.HybridConfigTest.test_only_full_attention_layers_contribute_kv_bytes) ... FAIL
+test_runtime_sizes_reject_bool_fractional_and_nonpositive (week3.test_inspect_model.HybridConfigTest.test_runtime_sizes_reject_bool_fractional_and_nonpositive) ... FAIL
+test_unknown_and_missing_model_types_are_rejected (week3.test_inspect_model.HybridConfigTest.test_unknown_and_missing_model_types_are_rejected) ... FAIL
+test_batch_and_length_scale_cache_not_query_heads (week3.test_inspect_model.InspectTest.test_batch_and_length_scale_cache_not_query_heads) ... ok
+test_explicit_head_dim_controls_projection_and_kv_bytes (week3.test_inspect_model.InspectTest.test_explicit_head_dim_controls_projection_and_kv_bytes) ... ok
+test_invalid_dimensions_rejected (week3.test_inspect_model.InspectTest.test_invalid_dimensions_rejected) ... ok
+test_local_template_matches_known_ids_and_roundtrip (week3.test_inspect_model.InspectTest.test_local_template_matches_known_ids_and_roundtrip) ... ok
+
+======================================================================
+FAIL: test_batch_length_and_element_size_scale_only_kv (week3.test_inspect_model.HybridConfigTest.test_batch_length_and_element_size_scale_only_kv)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 60, in inspect
+    return self.describe(self.config if config is None else config, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 90, in test_batch_length_and_element_size_scale_only_kv
+    self.assertEqual(self.inspect(batch=2)['kv_bytes'], 268435456)
+                     ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 62, in inspect
+    self.fail(f'合法配置应成功读取，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 合法配置应成功读取，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_describe_does_not_mutate_input (week3.test_inspect_model.HybridConfigTest.test_describe_does_not_mutate_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 60, in inspect
+    return self.describe(self.config if config is None else config, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 135, in test_describe_does_not_mutate_input
+    r = self.inspect()
+        ^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 62, in inspect
+    self.fail(f'合法配置应成功读取，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 合法配置应成功读取，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_explicit_head_dim_and_gate_do_not_inflate_query_features (week3.test_inspect_model.HybridConfigTest.test_explicit_head_dim_and_gate_do_not_inflate_query_features)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 60, in inspect
+    return self.describe(self.config if config is None else config, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 83, in test_explicit_head_dim_and_gate_do_not_inflate_query_features
+    r = self.inspect()
+        ^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 62, in inspect
+    self.fail(f'合法配置应成功读取，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 合法配置应成功读取，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_invalid_gqa_ratio_is_rejected (week3.test_inspect_model.HybridConfigTest.test_invalid_gqa_ratio_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 131, in test_invalid_gqa_ratio_is_rejected
+    self.assert_invalid(cfg, 'num_attention_heads')
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 num_attention_heads，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_layer_list_must_match_count_and_known_types (week3.test_inspect_model.HybridConfigTest.test_layer_list_must_match_count_and_known_types)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 106, in test_layer_list_must_match_count_and_known_types
+    self.assert_invalid(cfg, 'layer_types')
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 layer_types，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 118, in test_missing_and_invalid_dimensions_name_the_field
+    self.assert_invalid(cfg, field)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 num_hidden_layers，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 118, in test_missing_and_invalid_dimensions_name_the_field
+    self.assert_invalid(cfg, field)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 num_hidden_layers，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 118, in test_missing_and_invalid_dimensions_name_the_field
+    self.assert_invalid(cfg, field)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 num_hidden_layers，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=-1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 118, in test_missing_and_invalid_dimensions_name_the_field
+    self.assert_invalid(cfg, field)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 num_hidden_layers，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value=1.5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 118, in test_missing_and_invalid_dimensions_name_the_field
+    self.assert_invalid(cfg, field)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 num_hidden_layers，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) (field='num_hidden_layers', value='4')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 118, in test_missing_and_invalid_dimensions_name_the_field
+    self.assert_invalid(cfg, field)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 num_hidden_layers，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 121, in test_missing_and_invalid_dimensions_name_the_field
+    self.assert_invalid(cfg, field)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 num_hidden_layers，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_nested_config_must_be_a_text_config (week3.test_inspect_model.HybridConfigTest.test_nested_config_must_be_a_text_config)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 100, in test_nested_config_must_be_a_text_config
+    self.assert_invalid({'model_type': 'qwen3_5', 'text_config': text}, 'text_config')
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 text_config，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_only_full_attention_layers_contribute_kv_bytes (week3.test_inspect_model.HybridConfigTest.test_only_full_attention_layers_contribute_kv_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 60, in inspect
+    return self.describe(self.config if config is None else config, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 75, in test_only_full_attention_layers_contribute_kv_bytes
+    r = self.inspect()
+        ^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 62, in inspect
+    self.fail(f'合法配置应成功读取，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 合法配置应成功读取，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_runtime_sizes_reject_bool_fractional_and_nonpositive (week3.test_inspect_model.HybridConfigTest.test_runtime_sizes_reject_bool_fractional_and_nonpositive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 126, in test_runtime_sizes_reject_bool_fractional_and_nonpositive
+    self.assert_invalid(self.config, field, **{field: value})
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 batch，实际为 KeyError: 'num_hidden_layers'
+
+======================================================================
+FAIL: test_unknown_and_missing_model_types_are_rejected (week3.test_inspect_model.HybridConfigTest.test_unknown_and_missing_model_types_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 66, in assert_invalid
+    self.describe(config, **kwargs)
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/inspect_model.py", line 10, in describe_config
+    layers = config['num_hidden_layers']
+             ~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'num_hidden_layers'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 96, in test_unknown_and_missing_model_types_are_rejected
+    self.assert_invalid(cfg, 'model_type')
+  File "/home/ubuntu/infer-engine/.worktrees/qwen35-week3/week3/test_inspect_model.py", line 70, in assert_invalid
+    self.fail(f'应明确拒绝字段 {field}，实际为 {type(exc).__name__}: {exc}')
+AssertionError: 应明确拒绝字段 model_type，实际为 KeyError: 'num_hidden_layers'
+
+----------------------------------------------------------------------
+Ran 14 tests in 2.880s
+
+FAILED (failures=16)

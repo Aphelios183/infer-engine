@@ -19,7 +19,7 @@
 先想：如果把 32 层都按普通 Attention 计算，会高估哪一部分？
 
 ```bash
-cd /home/ubuntu/infer-engine/.worktrees/qwen35-week3
+cd /home/ubuntu/infer-engine
 CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m week3.inspect_model --config-only --config-file week3/fixtures/qwen35_4b_config_minimal.json
 ```
 

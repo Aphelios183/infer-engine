@@ -1,0 +1,19 @@
+test_batch_length_and_element_size_scale_only_kv (week3.test_inspect_model.HybridConfigTest.test_batch_length_and_element_size_scale_only_kv) ... ok
+test_describe_does_not_mutate_input (week3.test_inspect_model.HybridConfigTest.test_describe_does_not_mutate_input) ... ok
+test_explicit_head_dim_and_gate_do_not_inflate_query_features (week3.test_inspect_model.HybridConfigTest.test_explicit_head_dim_and_gate_do_not_inflate_query_features) ... ok
+test_invalid_gqa_ratio_is_rejected (week3.test_inspect_model.HybridConfigTest.test_invalid_gqa_ratio_is_rejected) ... ok
+test_layer_list_must_match_count_and_known_types (week3.test_inspect_model.HybridConfigTest.test_layer_list_must_match_count_and_known_types) ... ok
+test_missing_and_invalid_dimensions_name_the_field (week3.test_inspect_model.HybridConfigTest.test_missing_and_invalid_dimensions_name_the_field) ... ok
+test_nested_config_must_be_a_text_config (week3.test_inspect_model.HybridConfigTest.test_nested_config_must_be_a_text_config) ... ok
+test_only_full_attention_layers_contribute_kv_bytes (week3.test_inspect_model.HybridConfigTest.test_only_full_attention_layers_contribute_kv_bytes) ... ok
+test_runtime_sizes_reject_bool_fractional_and_nonpositive (week3.test_inspect_model.HybridConfigTest.test_runtime_sizes_reject_bool_fractional_and_nonpositive) ... ok
+test_unknown_and_missing_model_types_are_rejected (week3.test_inspect_model.HybridConfigTest.test_unknown_and_missing_model_types_are_rejected) ... ok
+test_batch_and_length_scale_cache_not_query_heads (week3.test_inspect_model.InspectTest.test_batch_and_length_scale_cache_not_query_heads) ... ok
+test_explicit_head_dim_controls_projection_and_kv_bytes (week3.test_inspect_model.InspectTest.test_explicit_head_dim_controls_projection_and_kv_bytes) ... ok
+test_invalid_dimensions_rejected (week3.test_inspect_model.InspectTest.test_invalid_dimensions_rejected) ... ok
+test_local_template_matches_known_ids_and_roundtrip (week3.test_inspect_model.InspectTest.test_local_template_matches_known_ids_and_roundtrip) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 2.795s
+
+OK
