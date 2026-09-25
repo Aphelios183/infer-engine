@@ -1,7 +1,12 @@
 """CPU/offline: real model config arithmetic and chat-template encoding."""
 import importlib.util
 import copy
+import contextlib
+import io
 import json
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 import unittest
 
@@ -32,21 +37,6 @@ class InspectTest(unittest.TestCase):
         for batch,length in [(0,4096),(1,-1)]:
             with self.assertRaises(ValueError):
                 self.module.describe_config(self.config,batch=batch,length=length)
-
-    def test_local_template_matches_known_ids_and_roundtrip(self):
-        from transformers import AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained(
-            '/home/ubuntu/huggingface/Qwen3-0.6B', local_files_only=True,
-            trust_remote_code=False)
-        result = self.module.inspect_prompt(tokenizer, '用一句话解释 KV Cache。')
-        self.assertEqual(result['chat_ids'], [151644,872,198,11622,105321,
-                          104136,84648,19479,1773,151645,198,151644,77091,
-                          198,151667,271,151668,271])
-        self.assertEqual(result['chat_length'],18)
-        self.assertTrue(result['template_encoding_matches'])
-        self.assertTrue(result['roundtrip_matches'])
-        self.assertEqual(result['eos_token_id'],151645)
-
 
 class HybridConfigTest(unittest.TestCase):
     def setUp(self):
@@ -135,6 +125,128 @@ class HybridConfigTest(unittest.TestCase):
         r = self.inspect()
         r['layer_types'].clear()
         self.assertEqual(self.config, original)
+
+
+class TinyTokenizer:
+    """No model assets: a reversible codec with explicit chat-template branches."""
+    eos_token, eos_token_id, vocab_size = '<eos>', 9, 1114112
+    mapping = True
+    ignore_switch = False
+    mismatch = False
+    bad_roundtrip = False
+
+    def get_chat_template(self):
+        return '{% if enable_thinking %}[on]{% else %}[off]{% endif %}'
+
+    def apply_chat_template(self, messages, *, tokenize, add_generation_prompt, enable_thinking):
+        text = '[user]' + messages[0]['content'] + '[assistant]'
+        text += '[on]' if enable_thinking and not self.ignore_switch else '[off]'
+        if not tokenize:
+            return text
+        ids = [ord(c) for c in text] + ([0] if self.mismatch else [])
+        return {'input_ids': ids} if self.mapping else ids
+
+    def encode(self, text, add_special_tokens=True):
+        return [ord(c) for c in text] + ([0] if add_special_tokens else [])
+
+    def decode(self, ids, **kwargs):
+        return ''.join(chr(i) for i in ids) + ('!' if self.bad_roundtrip else '')
+
+    def convert_ids_to_tokens(self, ids):
+        return [chr(i) for i in ids]
+
+    def __len__(self):
+        return self.vocab_size
+
+
+class PromptTest(unittest.TestCase):
+    def inspect(self, tokenizer, text, **kwargs):
+        from week3.inspect_model import inspect_prompt
+        return inspect_prompt(tokenizer, text, **kwargs)
+
+    def test_mapping_and_list_encode_template_once(self):
+        for mapping in (True, False):
+            tok = TinyTokenizer()
+            tok.mapping = mapping
+            r = self.inspect(tok, '你好')
+            self.assertEqual(r['rendered'], '[user]你好[assistant][off]')
+            self.assertEqual(r['raw_ids'], [20320, 22909])
+            self.assertEqual(r['chat_ids'], [ord(c) for c in '[user]你好[assistant][off]'])
+            self.assertTrue(r['thinking_switch_verified'])
+            self.assertEqual(r['template_settings']['enable_thinking'], False)
+            self.assertEqual(len(r['template_sha256']), 64)
+
+    def test_thinking_on_is_recorded_and_changes_rendering(self):
+        r = self.inspect(TinyTokenizer(), 'hello', thinking=True)
+        self.assertTrue(r['template_settings']['enable_thinking'])
+        self.assertTrue(r['rendered'].endswith('[on]'))
+
+    def test_empty_nontext_and_nonboolean_inputs_rejected(self):
+        for text in ('', ' \n ', None, ['hello']):
+            with self.assertRaises(ValueError):
+                self.inspect(TinyTokenizer(), text)
+        with self.assertRaises(ValueError):
+            self.inspect(TinyTokenizer(), 'hello', thinking='off')
+
+    def test_ignored_thinking_switch_is_not_claimed_as_supported(self):
+        tok = TinyTokenizer()
+        tok.ignore_switch = True
+        with self.assertRaisesRegex(ValueError, 'thinking'):
+            self.inspect(tok, 'hello')
+
+    def test_different_template_encodings_are_rejected(self):
+        tok = TinyTokenizer()
+        tok.mismatch = True
+        with self.assertRaises(AssertionError):
+            self.inspect(tok, 'hello')
+
+    def test_roundtrip_difference_is_rejected(self):
+        tok = TinyTokenizer()
+        tok.bad_roundtrip = True
+        with self.assertRaises(AssertionError):
+            self.inspect(tok, 'hello')
+
+
+class OfflineCliTest(unittest.TestCase):
+    fixture = Path(__file__).parent / 'fixtures/qwen35_4b_config_minimal.json'
+
+    def test_config_only_reads_directory_without_tokenizer(self):
+        from week3.inspect_model import main
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / 'config.json').write_bytes(self.fixture.read_bytes())
+            with contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(main(['--model', directory, '--config-only']), 0)
+            r = json.loads(out.getvalue())
+            self.assertEqual(r['kv_mib'], 128)
+            self.assertTrue(r['is_teaching_fixture'])
+
+    def test_fixture_mode_does_not_import_torch_or_transformers(self):
+        code = (
+            "import sys; from week3.inspect_model import main; "
+            "main(['--config-only','--config-file',sys.argv[1]]); "
+            "assert 'torch' not in sys.modules; assert 'transformers' not in sys.modules"
+        )
+        r = subprocess.run([sys.executable, '-B', '-c', code, str(self.fixture)],
+                           text=True, capture_output=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)['full_attention_layers'], 8)
+
+    def test_cli_rejects_missing_bad_config_and_wrong_mode(self):
+        from week3.inspect_model import main
+        with tempfile.TemporaryDirectory() as directory:
+            cfg = Path(directory) / 'config.json'
+            cases = [(['--model', directory, '--config-only'], None),
+                     (['--model', directory, '--config-only'], '{invalid'),
+                     (['--model', directory, '--config-only'], '{}'),
+                     (['--config-file', str(self.fixture)], None)]
+            for args, content in cases:
+                if content is not None:
+                    cfg.write_text(content, encoding='utf-8')
+                with self.subTest(args=args, content=content):
+                    with contextlib.redirect_stderr(io.StringIO()):
+                        with self.assertRaises(SystemExit) as exc:
+                            main(args)
+                    self.assertEqual(exc.exception.code, 2)
 
 
 if __name__ == '__main__':

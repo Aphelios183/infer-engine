@@ -1,6 +1,7 @@
 """第一课：只读取本地配置和 tokenizer；不加载权重、不执行模型、不写文件。"""
 import argparse
 from collections.abc import Mapping
+import hashlib
 import json
 from pathlib import Path
 
@@ -80,10 +81,21 @@ def describe_config(config, batch=1, length=4096, bytes_per_element=2):
                 kv_mib=kv_bytes / 1024**2)
 
 
-def inspect_prompt(tokenizer, prompt):
+def inspect_prompt(tokenizer, prompt, thinking=False):
+    if not isinstance(prompt, str) or not prompt.strip():
+        raise ValueError('prompt 必须为非空文本')
+    if type(thinking) is not bool:
+        raise ValueError('thinking 必须为 bool')
+    template = tokenizer.get_chat_template()
+    if not isinstance(template, str) or 'enable_thinking' not in template:
+        raise ValueError('chat template 未声明 enable_thinking；不能声称已关闭 thinking')
     messages = [{'role': 'user', 'content': prompt}]
-    kwargs = dict(add_generation_prompt=True, enable_thinking=False)
+    kwargs = dict(add_generation_prompt=True, enable_thinking=thinking)
     rendered = tokenizer.apply_chat_template(messages, tokenize=False, **kwargs)
+    other = tokenizer.apply_chat_template(messages, tokenize=False,
+        add_generation_prompt=True, enable_thinking=not thinking)
+    if rendered == other:
+        raise ValueError('thinking 开关未改变模板输出；本课不能确认该开关有效')
     # 模板已包含特殊标记，后续不重复自动添加 special tokens。
     ids = tokenizer.encode(rendered, add_special_tokens=False)
     direct = tokenizer.apply_chat_template(messages, tokenize=True, **kwargs)
@@ -99,32 +111,61 @@ def inspect_prompt(tokenizer, prompt):
     return dict(prompt=prompt, raw_ids=raw_ids, raw_length=len(raw_ids),
                 rendered=rendered, chat_ids=ids, chat_length=len(ids),
                 template_encoding_matches=True, roundtrip_matches=True,
+                template_settings=kwargs, thinking_switch_verified=True,
+                template_sha256=hashlib.sha256(template.encode('utf-8')).hexdigest(),
+                rendered_sha256=hashlib.sha256(rendered.encode('utf-8')).hexdigest(),
                 eos_token=tokenizer.eos_token, eos_token_id=tokenizer.eos_token_id,
                 tokenizer_base_vocab_size=tokenizer.vocab_size,
                 tokenizer_length=len(tokenizer),
                 tokens=tokenizer.convert_ids_to_tokens(ids))
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--model', type=Path, default=Path('/home/ubuntu/huggingface/Qwen3-0.6B'))
+    sources = parser.add_mutually_exclusive_group()
+    sources.add_argument('--model', type=Path, help='本地模型目录；默认 Qwen3.5-4B')
+    sources.add_argument('--config-file', type=Path, help='只读 JSON 文件，仅配合 --config-only')
+    parser.add_argument('--config-only', action='store_true', help='只读配置；不导入 torch/tokenizer')
+    parser.add_argument('--thinking', choices=('on', 'off'), default='off')
     parser.add_argument('--prompt', default='用一句话解释 KV Cache。')
-    args = parser.parse_args()
-    if not args.model.is_dir():
-        parser.error('model 必须是已存在的本地目录；不会从网络下载')
-    config = json.loads((args.model / 'config.json').read_text(encoding='utf-8'))
+    args = parser.parse_args(argv)
+    if args.config_file is not None and not args.config_only:
+        parser.error('--config-file 必须配合 --config-only；教学样例不能用于分词或加载模型')
+    model_path = args.model or Path('/home/ubuntu/huggingface/Qwen3.5-4B')
+    config_path = args.config_file if args.config_file is not None else model_path / 'config.json'
+    try:
+        raw = config_path.read_bytes()
+        config = json.loads(raw)
+        report = describe_config(config)
+    except (OSError, ValueError) as exc:
+        parser.error(f'本地配置读取失败: {config_path}: {exc}。不会自动下载或退回旧模型。')
+    report.update(config_source=str(config_path),
+                  config_sha256=hashlib.sha256(raw).hexdigest(),
+                  is_teaching_fixture='_fixture_note' in config,
+                  fixture_note=config.get('_fixture_note'))
+    if args.config_only:
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0
+    if '_fixture_note' in config:
+        parser.error('教学缩减样例只支持 --config-only，不是可运行模型目录')
     from transformers import AutoTokenizer
-    tokenizer = AutoTokenizer.from_pretrained(str(args.model), local_files_only=True,
-                                              trust_remote_code=False)
-    print('=== 模型配置与理论 KV 大小（未分配 KV） ===')
-    print(json.dumps(describe_config(config), ensure_ascii=False, indent=2))
-    result = inspect_prompt(tokenizer, args.prompt)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(str(model_path), local_files_only=True,
+                                                 trust_remote_code=False)
+        result = inspect_prompt(tokenizer, args.prompt, thinking=args.thinking == 'on')
+    except (OSError, ValueError) as exc:
+        parser.error(f'本地 tokenizer/模板检查失败: {exc}；本脚本不会下载资产')
+    print('=== 模型配置与 Full Attention 理论 KV（未分配张量） ===')
+    print(json.dumps(report, ensure_ascii=False, indent=2))
     print('\n=== 文本到 token ===')
     print('原始文本:', repr(result['prompt']))
     print('模板后文本:', repr(result['rendered']))
     print('原始 token 数:', result['raw_length'], '模型输入 token 数:', result['chat_length'])
     print('输入 IDs:', result['chat_ids'])
     print('EOS:', result['eos_token'], result['eos_token_id'])
+    print('模板设置:', result['template_settings'])
+    print('模板 SHA256:', result['template_sha256'])
+    print('thinking 开关已改变模板；尚未运行模型，不推断模型生成行为。')
     print('tokenizer 基础词表 / 含 added tokens:',
           result['tokenizer_base_vocab_size'], result['tokenizer_length'])
     print('逐位置 token 表示（字节级分词标记不一定是可读汉字）:')
@@ -132,7 +173,8 @@ def main():
         print(f'{position:3d}  {token_id:6d}  {token!r}')
     print('模板两种编码一致；完整序列往返解码一致。')
     print('今天只到 token IDs；没有加载权重、生成 logits 或生成回答。')
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

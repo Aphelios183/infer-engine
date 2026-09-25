@@ -1,83 +1,118 @@
-# Week 3 第一课：模型接收的不是文字，而是 token IDs
+# Lesson 01：先读懂 Qwen3.5，再把文本变成输入
 
-今天只做 CPU 实验：读取本地 Qwen3-0.6B 配置和 tokenizer。先不用 GPU、不加载权重，也不修改 nano-vLLM 源码或 Python 环境。
+本课分两段：**1A 配置实验现在做；1B 真实 tokenizer 实验待资产准备后做。**
+使用 Qwen3.5-4B，暂不加载模型，不使用 GPU。
 
-## 1. 我们到底要自己实现什么？
+## 1. 把第二周的知识接过来
 
-交付物仍是自己的 infer-engine。第一阶段可以复用 Transformers 的模型 forward、tokenizer 和已有算子，但必须自己写 Prefill/Decode 的控制流程、下一 token 选择、EOS/长度停止、缓存对象传递和请求状态。
+第二周学的 KV Cache 没有失效，只是现在不能给每一层都套同一种缓存公式。
 
-仅调用现成 generate() 不算完成这项交付。第三周后续会让你在 minimal_generate.py 中实现自己的单请求循环；它是引擎的第一块，不宣称已经自研模型算子、分页缓存或完整服务。nano-vLLM 是参照与学习对象。
+| 层类型 | 教学配置层数 | 要保存的历史信息 |
+| --- | --- | --- |
+| Full Attention | 8 | 历史 token 的 K/V，随上下文长度增长 |
+| Linear Attention（Gated DeltaNet） | 24 | recurrent/conv state，不能套普通 KV 公式 |
 
-## 2. 今天的输入链路
+固定大小的状态仍会随输入更新内容，不等于“不记历史”。本课先识别两类路径，不要求现在推导 DeltaNet 数学。
 
-```text
-用户文本 → chat template → 格式化文本 → tokenizer → token IDs
-```
+## 2. 先预测，再检查配置
 
-- chat template：标明谁在说话、消息在哪里结束、模型应该从哪里开始回答。
-- tokenizer：按已有词表和编码规则，把文本转换成整数 ID 序列。
-- token ID：词表索引，不是向量、概率或已经计算好的 K/V。
-- embedding：模型稍后把 ID 查表变成向量；今天还没有走到这一步。
-
-“一个字等于一个 token”不成立。分词可能把片段合并，也可能把某个字符拆成多个 token；标点、空格、角色标记同样会影响输入长度。
-
-## 3. 运行观察脚本
+先想：如果把 32 层都按普通 Attention 计算，会高估哪一部分？
 
 ```bash
-cd /home/ubuntu/infer-engine
-conda activate nanovllm
-CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 python week3/inspect_model.py
+cd /home/ubuntu/infer-engine/.worktrees/qwen35-week3
+CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m week3.inspect_model --config-only --config-file week3/fixtures/qwen35_4b_config_minimal.json
 ```
 
-脚本只读取本地文件，local_files_only=True，不下载模型，不加载 model.safetensors。输出中的 KV 大小是理论计算值，不是测到的 GPU 分配量。
+这里是教学 fixture，输出明确标记 `is_teaching_fixture=true`，不是模型已安装的证据。
+fixture 的来源链接见文件中的 `_source`；它不替代后续固定 revision 的模型资产清单。
 
-再换一句话观察长度，不要只背默认答案：
+关键字段：
 
-```bash
-CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 python week3/inspect_model.py --prompt 'Hello, KV Cache!'
-```
+- 外层 `model_type=qwen3_5`，文本配置在 `text_config`，其类型为 `qwen3_5_text`。
+- `hidden_size=2560`，总层数 32。
+- Q 头数 16，KV 头数 4，显式 `head_dim=256`。
+- Full Attention 原始层索引为 3、7、11、15、19、23、27、31（从零开始）。
 
-脚本会比较两种路线：模板直接 tokenize，与先得到模板文本再 encode(add_special_tokens=False)。输入 IDs 必须相同。这是为了防止在预处理阶段重复添加标记。
+## 3. token ID 不是 hidden state
 
-## 4. 真实模型配置与教学模型的区别
-
-本地配置：28 层、hidden_size=1024、16 个 Q 头、8 个 KV 头、head_dim=128，模型配置 vocab_size=151936。
-
-GQA 每 2 个 Q 头共享一组 K/V。注意 1024/16=64，但配置明确 head_dim=128：不能照搬第一周的 C/H 假设。Q 投影总宽度为 16×128=2048，K/V 各为 8×128=1024，Attention 后经输出投影回到 hidden_size=1024。
-
-BF16 或 FP16 KV 每元素 2 字节。单请求 4096 个位置的全层 KV 理论占用为：
+假设输入 L 个 token：
 
 ```text
-2 × 28 × 1 × 4096 × 8 × 128 × 2
-= 469762048 字节 = 448 MiB
+input_ids       [1, L]          整数编号
+embedding 输出  [1, L, 2560]    每个编号对应一个向量
+单 token decode [1, 1] → [1, 1, 2560]
 ```
 
-这不是模型权重大小，也不是启动引擎后的总显存。正式生成时还要确认实际 KV dtype 和布局。
+这些是配置推导，不是已运行真实 forward 得到的张量。
+不要再漏掉序列维度：L 个 token 就有 L 个向量。
 
-## 5. 模板中的特殊 token
+这里不能用 hidden_size / Q头数替代显式 head_dim。
+Q 的注意力特征宽度为 16 × 256 = 4096，输出投影再回到 2560。
+配置还包含 attention output gate；4096 只指 Q 特征，不是包含 gate 在内的整个打包投影宽度。
 
-本地 tokenizer 的 EOS 是 <|im_end|>，ID 为 151645。默认短提示词格式化后，既有用户消息结束标记，也有 assistant 开始标记；关闭 thinking 时，当前模板还会在 assistant 前缀里放置空的 <think>...</think> 标记。
+## 4. KV 公式要限定统计范围
 
-这些字符只是实际模板格式，不说明本次已经生成了思考过程。关闭 thinking 的实际行为要以本地模板输出为准。
+取 batch=1、历史长度4096、BF16每元素2字节：
 
-一个易错点：输入里已经有用户消息的 EOS/结束标记，并不意味着生成循环应该立即退出。后面实现停止条件时，判断的是新生成的 token 与生成上限，而不是“整段输入曾经出现过 EOS”。
+```text
+Full Attention KV bytes
+= 2 × Full层数 × B × T × KV头数 × head_dim × 元素字节
+= 2 × 8 × 1 × 4096 × 4 × 256 × 2
+= 134217728 bytes
+= 128 MiB
+```
 
-另一个区别：本地 tokenizer.vocab_size=151643，len(tokenizer)=151669，而模型 config.vocab_size=151936。它们分别报告基础词表、含新增 token 的 tokenizer 大小和模型配置的词表输出宽度；不要强行当成同一个数。为什么模型额外保留这些位置，需要进一步核查具体模型设计，今天不凭差值下结论。
+这里没有统计 linear state、模型权重、临时张量、内存分配器预留或其他 CUDA 开销。
+所以 128 MiB 不是进程总显存，也不是全部混合缓存的实测值。
 
-## 6. 连接下一课：从 ID 到下一个 ID
+`linear_state_bytes=null` 表示**尚未加载模型并测量状态张量**，不代表零。
+配置声明的 state dtype 也不能冒充运行时测量；这一点留到 Lesson 3 验证。
 
-以 batch=1、输入长度 L 为例，参考完整模型通常返回 [1,L,V] 的 logits，V 使用模型输出词表维度。这里的 logits 是候选 token 的未归一化得分，不是概率。
+## 5. 现在完成的练习（Lesson 1A）
 
-取最后有效输入位置的 logits，选择下一个 token。对于这个模型，V 预期为配置中的 151936，实际 forward 时还要验证。把新选出的 token 送入下一次 forward，才会计算并写入它的 K/V。
+先不看参考脚本实现，回答：
 
-今天还没有加载模型，这些是下一课要检查的预期，不是今天已测量的 forward 结果。
+1. 输入 IDs 为 [1,12]，embedding 输出形状是什么？只输入一个新 token 呢？
+2. 在其余条件不变时，把 T 从4096减为2048，Full Attention KV 是多少 MiB？进程总显存也必然减半吗？
+3. 为什么 linear_state_bytes=null 不能解释成“这24层没有缓存”？
+4. 原始模型第3层是第一个 Full Attention 层；为什么不能直接把原始层编号当作紧凑的0–7号 KV 索引？
 
-## 7. 你的第一组问题
+动手：读取 fixture，自己用循环分类 `layer_types`，输出两类层的原始索引，再与检查脚本对照。
+先交第1–3题答案；确认理解后再进入1B，而不是直接加载权重。
 
-先运行默认脚本，再回答：
+## 6. 下一段：真实文本到 IDs（Lesson 1B，尚未执行）
 
-1. 原始用户文本有几个 token？应用模板后有几个？为什么模型真正输入的长度变了？
-2. 输出里看到 ID=151645，它是用户消息中的标记，为什么不能据此直接停止生成？
-3. 今天得到的 input IDs 是向量吗？哪个步骤会把它们变成向量？
+准备好真实 tokenizer 资产后才运行：
 
-先回答这三题，不急着一次学习全部模型层。接下来我们才加载权重，观察 logits，并把生成循环写进自己的仓库。
+```bash
+CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m week3.inspect_model --model /home/ubuntu/huggingface/Qwen3.5-4B --prompt '用一句话解释 KV Cache' --thinking off
+```
+
+目录不存在时明确报错，不自动下载、不偷偷换回 Qwen3-0.6B。
+实际目录与固定版本由资产准备课确认。
+
+学习链路为：原始消息 → 一次 chat template → token IDs → 下一课的 embedding/forward。
+观察原文与模板文本的区别，并核对：
+
+- 模板文本 encode(add_special_tokens=False) 与直接 apply_chat_template(tokenize=True) 的 IDs 相同。
+- 完整解码能还原模板文本；模板只套一次。
+- 新模型的 EOS、token 数要实际读取，不能照搬旧课的18个token或151645。
+- thinking 开关能改变模板输出，只证明输入格式开关有效，不证明模型生成行为已验证。
+- 输入里出现结束标记不等于立刻终止生成；生成循环的停止规则针对新选出的 token。
+
+## 7. 实验与验收不混淆
+
+当前模拟 tokenizer 单测检验工具逻辑，不证明真实 Qwen3.5 tokenizer 已可用。
+资产准备完后，显式运行：
+
+```bash
+RUN_TOKENIZER_INTEGRATION=1 CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m unittest week3.test_tokenizer_integration.TokenizerIntegrationTest.test_qwen35_target -v
+```
+
+默认 SKIP 不算通过；显式启用后缺少资产应失败。
+当前工具展示模板哈希和渲染后的输入；模板源码及完整解码文本的持久化报告留作后续诊断增强，不宣称已有完整模板证据报告。
+
+## 8. 然后才进入 Lesson 2
+
+Lesson 2 使用模型 forward，但你自己控制首 token、decode、EOS 和长度上限，不用现成 generate() 代替学习。
+本课不产生吞吐、TTFT、TPOT 等性能结论；能看配置不代表原生引擎适配成功。
