@@ -1,0 +1,95 @@
+test_allocated_zero_tensor_is_not_unknown (week3.test_cache_inspection.CacheInspectionTests.test_allocated_zero_tensor_is_not_unknown) ... FAIL
+test_bad_schema_and_length_are_rejected (week3.test_cache_inspection.CacheInspectionTests.test_bad_schema_and_length_are_rejected) ... FAIL
+test_dtype_is_observed_not_configured (week3.test_cache_inspection.CacheInspectionTests.test_dtype_is_observed_not_configured) ... FAIL
+test_each_call_has_independent_storage_accounting (week3.test_cache_inspection.CacheInspectionTests.test_each_call_has_independent_storage_accounting) ... FAIL
+test_mismatching_kv_shapes_are_rejected (week3.test_cache_inspection.CacheInspectionTests.test_mismatching_kv_shapes_are_rejected) ... FAIL
+test_missing_attribute_and_none_are_incomplete (week3.test_cache_inspection.CacheInspectionTests.test_missing_attribute_and_none_are_incomplete) ... FAIL
+test_missing_cache_is_unknown_not_zero (week3.test_cache_inspection.CacheInspectionTests.test_missing_cache_is_unknown_not_zero) ... FAIL
+test_non_tensor_state_is_rejected (week3.test_cache_inspection.CacheInspectionTests.test_non_tensor_state_is_rejected) ... FAIL
+test_offset_views_deduplicate_whole_storage (week3.test_cache_inspection.CacheInspectionTests.test_offset_views_deduplicate_whole_storage) ... FAIL
+test_shared_storage_actual_dtype_and_no_mutation (week3.test_cache_inspection.CacheInspectionTests.test_shared_storage_actual_dtype_and_no_mutation) ... FAIL
+
+======================================================================
+FAIL: test_allocated_zero_tensor_is_not_unknown (week3.test_cache_inspection.CacheInspectionTests.test_allocated_zero_tensor_is_not_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_bad_schema_and_length_are_rejected (week3.test_cache_inspection.CacheInspectionTests.test_bad_schema_and_length_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_dtype_is_observed_not_configured (week3.test_cache_inspection.CacheInspectionTests.test_dtype_is_observed_not_configured)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_each_call_has_independent_storage_accounting (week3.test_cache_inspection.CacheInspectionTests.test_each_call_has_independent_storage_accounting)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_mismatching_kv_shapes_are_rejected (week3.test_cache_inspection.CacheInspectionTests.test_mismatching_kv_shapes_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_missing_attribute_and_none_are_incomplete (week3.test_cache_inspection.CacheInspectionTests.test_missing_attribute_and_none_are_incomplete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_missing_cache_is_unknown_not_zero (week3.test_cache_inspection.CacheInspectionTests.test_missing_cache_is_unknown_not_zero)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_non_tensor_state_is_rejected (week3.test_cache_inspection.CacheInspectionTests.test_non_tensor_state_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_offset_views_deduplicate_whole_storage (week3.test_cache_inspection.CacheInspectionTests.test_offset_views_deduplicate_whole_storage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+======================================================================
+FAIL: test_shared_storage_actual_dtype_and_no_mutation (week3.test_cache_inspection.CacheInspectionTests.test_shared_storage_actual_dtype_and_no_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_cache_inspection.py", line 13, in setUp
+    self.assertIsNotNone(snapshot_cache, "snapshot_cache not implemented")
+AssertionError: unexpectedly None : snapshot_cache not implemented
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.001s
+
+FAILED (failures=10)

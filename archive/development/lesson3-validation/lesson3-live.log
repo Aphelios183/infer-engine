@@ -1,0 +1,13 @@
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 8130.17it/s]
+A input 35 output 4 stop length
+prefill 35 27885568 27885568 {}
+decode 36 27918336 27918336 {'keys': {'history_exactly_preserved': True}, 'values': {'history_exactly_preserved': True}, 'conv': {'same_shape': True, 'finite': True, 'max_abs_change': 30.78125}, 'recurrent': {'same_shape': True, 'finite': True, 'max_abs_change': 2.634765625}}
+decode 37 27951104 27951104 {'keys': {'history_exactly_preserved': True}, 'values': {'history_exactly_preserved': True}, 'conv': {'same_shape': True, 'finite': True, 'max_abs_change': 30.78125}, 'recurrent': {'same_shape': True, 'finite': True, 'max_abs_change': 2.125}}
+decode 38 27983872 27983872 {'keys': {'history_exactly_preserved': True}, 'values': {'history_exactly_preserved': True}, 'conv': {'same_shape': True, 'finite': True, 'max_abs_change': 31.71875}, 'recurrent': {'same_shape': True, 'finite': True, 'max_abs_change': 1.583984375}}
+B input 13 output 4 stop length
+prefill 13 27164672 27164672 {}
+decode 14 27197440 27197440 {'keys': {'history_exactly_preserved': True}, 'values': {'history_exactly_preserved': True}, 'conv': {'same_shape': True, 'finite': True, 'max_abs_change': 29.78125}, 'recurrent': {'same_shape': True, 'finite': True, 'max_abs_change': 2.18359375}}
+decode 15 27230208 27230208 {'keys': {'history_exactly_preserved': True}, 'values': {'history_exactly_preserved': True}, 'conv': {'same_shape': True, 'finite': True, 'max_abs_change': 29.78125}, 'recurrent': {'same_shape': True, 'finite': True, 'max_abs_change': 1.724609375}}
+decode 16 27262976 27262976 {'keys': {'history_exactly_preserved': True}, 'values': {'history_exactly_preserved': True}, 'conv': {'same_shape': True, 'finite': True, 'max_abs_change': 29.78125}, 'recurrent': {'same_shape': True, 'finite': True, 'max_abs_change': 5.255859375}}
+CACHE_OBSERVATION_COMPLETE
