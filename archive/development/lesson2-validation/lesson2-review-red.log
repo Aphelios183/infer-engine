@@ -1,0 +1,24 @@
+test_extra_loader_asset_cannot_bypass_snapshot_check (week3.test_reference_runtime.RuntimeTests.test_extra_loader_asset_cannot_bypass_snapshot_check) ... 
+  test_extra_loader_asset_cannot_bypass_snapshot_check (week3.test_reference_runtime.RuntimeTests.test_extra_loader_asset_cannot_bypass_snapshot_check) (name='model.safetensors') ... FAIL
+  test_extra_loader_asset_cannot_bypass_snapshot_check (week3.test_reference_runtime.RuntimeTests.test_extra_loader_asset_cannot_bypass_snapshot_check) (name='generation_config.json') ... FAIL
+
+======================================================================
+FAIL: test_extra_loader_asset_cannot_bypass_snapshot_check (week3.test_reference_runtime.RuntimeTests.test_extra_loader_asset_cannot_bypass_snapshot_check) (name='model.safetensors')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 114, in test_extra_loader_asset_cannot_bypass_snapshot_check
+    with self.assertRaisesRegex(ValueError,"未跟踪|untracked"):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_extra_loader_asset_cannot_bypass_snapshot_check (week3.test_reference_runtime.RuntimeTests.test_extra_loader_asset_cannot_bypass_snapshot_check) (name='generation_config.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 114, in test_extra_loader_asset_cannot_bypass_snapshot_check
+    with self.assertRaisesRegex(ValueError,"未跟踪|untracked"):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (failures=2)

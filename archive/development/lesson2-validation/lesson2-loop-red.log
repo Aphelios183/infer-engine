@@ -1,0 +1,185 @@
+test_decode_positions_mask_and_cache (week3.test_reference_runtime.RuntimeTests.test_decode_positions_mask_and_cache) ... FAIL
+test_eos_normalization (week3.test_reference_runtime.RuntimeTests.test_eos_normalization) ... FAIL
+test_loading_diagnostics_are_not_ignored (week3.test_reference_runtime.RuntimeTests.test_loading_diagnostics_are_not_ignored) ... FAIL
+test_prefill_positions_and_full_recompute (week3.test_reference_runtime.RuntimeTests.test_prefill_positions_and_full_recompute) ... FAIL
+test_reject_bad_inputs_before_forward (week3.test_reference_runtime.RuntimeTests.test_reject_bad_inputs_before_forward) ... FAIL
+test_reject_bad_model_outputs (week3.test_reference_runtime.RuntimeTests.test_reject_bad_model_outputs) ... FAIL
+test_reject_invalid_cache_position_contract (week3.test_reference_runtime.RuntimeTests.test_reject_invalid_cache_position_contract) ... FAIL
+test_unknown_model_directory_is_rejected (week3.test_reference_runtime.RuntimeTests.test_unknown_model_directory_is_rejected) ... FAIL
+test_eos_in_prompt_does_not_stop_but_new_eos_does (week3.test_minimal_generate.GenerationTests.test_eos_in_prompt_does_not_stop_but_new_eos_does) ... FAIL
+test_failure_then_new_request_starts_clean (week3.test_minimal_generate.GenerationTests.test_failure_then_new_request_starts_clean) ... FAIL
+test_first_token_eos_and_eos_priority (week3.test_minimal_generate.GenerationTests.test_first_token_eos_and_eos_priority) ... FAIL
+test_invalid_budget (week3.test_minimal_generate.GenerationTests.test_invalid_budget) ... FAIL
+test_invalid_eos (week3.test_minimal_generate.GenerationTests.test_invalid_eos) ... FAIL
+test_invalid_input (week3.test_minimal_generate.GenerationTests.test_invalid_input) ... FAIL
+test_missing_cache_rejected (week3.test_minimal_generate.GenerationTests.test_missing_cache_rejected) ... FAIL
+test_nonfinite_and_bad_shape_scores (week3.test_minimal_generate.GenerationTests.test_nonfinite_and_bad_shape_scores) ... FAIL
+test_observer_must_return_json_not_cache_tensor (week3.test_minimal_generate.GenerationTests.test_observer_must_return_json_not_cache_tensor) ... FAIL
+test_one_budget_prefill_only (week3.test_minimal_generate.GenerationTests.test_one_budget_prefill_only) ... FAIL
+test_two_budget_no_third_forward (week3.test_minimal_generate.GenerationTests.test_two_budget_no_third_forward) ... FAIL
+test_zero_budget_does_not_call_forward (week3.test_minimal_generate.GenerationTests.test_zero_budget_does_not_call_forward) ... FAIL
+
+======================================================================
+FAIL: test_decode_positions_mask_and_cache (week3.test_reference_runtime.RuntimeTests.test_decode_positions_mask_and_cache)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 31, in setUp
+    self.assertIsNotNone(runtime, "reference_runtime is not implemented")
+AssertionError: unexpectedly None : reference_runtime is not implemented
+
+======================================================================
+FAIL: test_eos_normalization (week3.test_reference_runtime.RuntimeTests.test_eos_normalization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 31, in setUp
+    self.assertIsNotNone(runtime, "reference_runtime is not implemented")
+AssertionError: unexpectedly None : reference_runtime is not implemented
+
+======================================================================
+FAIL: test_loading_diagnostics_are_not_ignored (week3.test_reference_runtime.RuntimeTests.test_loading_diagnostics_are_not_ignored)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 31, in setUp
+    self.assertIsNotNone(runtime, "reference_runtime is not implemented")
+AssertionError: unexpectedly None : reference_runtime is not implemented
+
+======================================================================
+FAIL: test_prefill_positions_and_full_recompute (week3.test_reference_runtime.RuntimeTests.test_prefill_positions_and_full_recompute)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 31, in setUp
+    self.assertIsNotNone(runtime, "reference_runtime is not implemented")
+AssertionError: unexpectedly None : reference_runtime is not implemented
+
+======================================================================
+FAIL: test_reject_bad_inputs_before_forward (week3.test_reference_runtime.RuntimeTests.test_reject_bad_inputs_before_forward)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 31, in setUp
+    self.assertIsNotNone(runtime, "reference_runtime is not implemented")
+AssertionError: unexpectedly None : reference_runtime is not implemented
+
+======================================================================
+FAIL: test_reject_bad_model_outputs (week3.test_reference_runtime.RuntimeTests.test_reject_bad_model_outputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 31, in setUp
+    self.assertIsNotNone(runtime, "reference_runtime is not implemented")
+AssertionError: unexpectedly None : reference_runtime is not implemented
+
+======================================================================
+FAIL: test_reject_invalid_cache_position_contract (week3.test_reference_runtime.RuntimeTests.test_reject_invalid_cache_position_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 31, in setUp
+    self.assertIsNotNone(runtime, "reference_runtime is not implemented")
+AssertionError: unexpectedly None : reference_runtime is not implemented
+
+======================================================================
+FAIL: test_unknown_model_directory_is_rejected (week3.test_reference_runtime.RuntimeTests.test_unknown_model_directory_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_reference_runtime.py", line 31, in setUp
+    self.assertIsNotNone(runtime, "reference_runtime is not implemented")
+AssertionError: unexpectedly None : reference_runtime is not implemented
+
+======================================================================
+FAIL: test_eos_in_prompt_does_not_stop_but_new_eos_does (week3.test_minimal_generate.GenerationTests.test_eos_in_prompt_does_not_stop_but_new_eos_does)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_failure_then_new_request_starts_clean (week3.test_minimal_generate.GenerationTests.test_failure_then_new_request_starts_clean)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_first_token_eos_and_eos_priority (week3.test_minimal_generate.GenerationTests.test_first_token_eos_and_eos_priority)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_invalid_budget (week3.test_minimal_generate.GenerationTests.test_invalid_budget)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_invalid_eos (week3.test_minimal_generate.GenerationTests.test_invalid_eos)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_invalid_input (week3.test_minimal_generate.GenerationTests.test_invalid_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_missing_cache_rejected (week3.test_minimal_generate.GenerationTests.test_missing_cache_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_nonfinite_and_bad_shape_scores (week3.test_minimal_generate.GenerationTests.test_nonfinite_and_bad_shape_scores)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_observer_must_return_json_not_cache_tensor (week3.test_minimal_generate.GenerationTests.test_observer_must_return_json_not_cache_tensor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_one_budget_prefill_only (week3.test_minimal_generate.GenerationTests.test_one_budget_prefill_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_two_budget_no_third_forward (week3.test_minimal_generate.GenerationTests.test_two_budget_no_third_forward)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+======================================================================
+FAIL: test_zero_budget_does_not_call_forward (week3.test_minimal_generate.GenerationTests.test_zero_budget_does_not_call_forward)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_minimal_generate.py", line 27, in setUp
+    self.assertIsNotNone(generation, "minimal_generate is not implemented")
+AssertionError: unexpectedly None : minimal_generate is not implemented
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.002s
+
+FAILED (failures=20)

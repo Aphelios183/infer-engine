@@ -1,6 +1,6 @@
 # Week 3 环境与证据边界
 
-更新：2026-09-25。当前目标 Qwen3.5-4B；原 Qwen3-0.6B 记录已归档到 [历史记录](../archive/old-models/QWEN3_06B.md)。
+更新：2026-09-28。当前目标 Qwen3.5-4B；原 Qwen3-0.6B 记录已归档到 [历史记录](../archive/old-models/QWEN3_06B.md)。
 
 ## 工作区
 
@@ -20,8 +20,20 @@
 | fla / causal_conv1d | 当前未安装 |
 | GPU | 八张 NVIDIA L40，每张 nvidia-smi 显示46068 MiB |
 
-本次没有安装/升级/降级依赖，没有下载模型，没有 GPU 实验。
-Qwen3.5-4B 的目标目录尚未作为可用资产验证；教学 fixture 不是完整 config/权重/tokenizer，也没有代替模型 revision 锁定。
+2026-09-25 仅运行配置实验；2026-09-28 经用户授权，从 ModelScope 下载模型。没有安装/升级/降级依赖；随后已完成GPU5上的两次forward及三条短提示词生成，详见 [生成报告](LESSON_02_GENERATION_RESULTS.md)。
+
+## 2026-09-28 模型资产与 tokenizer 实测
+
+- 来源：https://modelscope.cn/models/Qwen/Qwen3.5-4B；Hugging Face DNS 超时后，经用户明确同意切换来源。
+- Git revision：ed182e32090db791077e12e0f58d22f3daafa173（ModelScope commit，不声称与 HF SHA 相同）。
+- 本地目录：/home/ubuntu/huggingface/Qwen3.5-4B，detached HEAD 固定版本。
+- 两个 safetensors 分片约9.3 GB；git lfs fsck 输出 Git LFS fsck OK。
+- 真实 tokenizer 集成测试显式执行，1项通过；不是默认SKIP。
+- 提示词“用一句话解释 KV Cache”：原文5个token，模板输入17个token；tokenizer EOS为248046。生成停止配置仍应按实际模型配置读取。
+- 模板两种编码一致、完整解码往返一致；thinking关闭改变模板，不代表模型生成行为已验证。
+- 通用 model_assets.py 和 infer_engine_manifest.json 尚未实现；当前Git/LFS下载校验不冒充已完成原计划Task 3全部接口。
+- 本次生成配置EOS为248044，与tokenizer消息结束248046不同，停止判断优先使用model.generation_config。
+- 完整循环与结果见 [Lesson 02](LESSON_02.md) 和 [生成报告](LESSON_02_GENERATION_RESULTS.md)。
 
 ## 当前验证结果
 
@@ -47,6 +59,6 @@ CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/py
 
 ## 尚未验证
 
-真实 Qwen3.5 tokenizer、权重加载、forward、生成、混合缓存生命周期、logits 对拍、GPU 性能、nano-vLLM 原生适配均不能标为完成。
+已完成权重加载、forward冒烟和三条短提示词的手写循环生成；混合缓存完整生命周期、logits对拍、GPU性能及nano-vLLM原生适配仍未验收。
 两个工具级后续小项：输出完整模板源码/完整解码诊断，以及用模拟 loader 覆盖普通 CLI 的离线加载参数。
 学习进度与工程工具进度分别见 [计划](PLAN.md)。
