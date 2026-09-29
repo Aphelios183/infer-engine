@@ -4,7 +4,7 @@
 
 当前课程工作区：`/home/ubuntu/infer-engine`，分支 `main`。最新课程已整合回主目录；直接从这里运行本课命令。
 
-当前进度：[Lesson 4](LESSON_04.md) 已进入真实模型校准/诊断阶段。对拍工具已实现，候选容差审阅未通过，正式验收未完成；见[实验报告](LESSON_04_RESULTS.md)。
+课程交接（2026-09-29）：用户选择优先理解引擎，当前进入[Week4](../week4/PLAN.md)。本周对拍工具与真实诊断已完成，候选容差未批准，正式验收未完成；见[实验报告](LESSON_04_RESULTS.md)。这是解除学习阻塞，不是将diagnostic改为pass。
 
 ## 学习方式
 
@@ -20,7 +20,7 @@ Lesson 2生成循环已接通；Lesson 3观察器和真实形状/选定层更新
 | Lesson 1B | 文本怎样变成模型输入？ | 对比原文/模板、IDs、EOS、thinking 设置，检查编码一致性 | Task 2 工具 + Task 3 资产准备：真实 tokenizer 已验证；ModelScope 固定版本资产已下载，完整自动化资产校验模块仍待实现 |
 | Lesson 2 | 第一个输出 token 从哪里来？ | 先读一次 forward，再亲手写 prefill/decode/停止循环 | Tasks 3–5：固定模型资产，参考 forward，手写生成循环 |
 | Lesson 3 | 混合模型到底缓存了什么？ | 检查 KV 与 recurrent/conv state 的形状、dtype、存储及请求生命周期 | Task 6：观测完成，数值隔离待下一课 |
-| Lesson 4（当前） | 增量计算真的正确吗？ | 固定相同 token 前缀，逐步比较全重算/缓存路径 logits | Task 7：真实诊断已运行；候选容差未批准，正式验收待完成 |
+| Lesson 4 | 增量计算真的正确吗？ | 固定相同 token 前缀，逐步比较全重算/缓存路径 logits | Task 7：真实诊断已运行；候选容差未批准，正式验收作为后续待办 |
 | 本周验收 | 别人能否复现你的结论？ | 三条短提示词、停止原因、环境与原始结果报告 | Task 8：可复现实验与限制说明 |
 
 设计与详细实现计划供查阅，不要求初学者先读完：
@@ -29,7 +29,7 @@ Lesson 2生成循环已接通；Lesson 3观察器和真实形状/选定层更新
 
 ## 现在从哪里开始
 
-当前先读 [Lesson 4 实验报告](LESSON_04_RESULTS.md) 与容差审阅，理解“有实测数据”与“验收通过”的区别。Lesson 2真实运行保留在 [生成报告](LESSON_02_GENERATION_RESULTS.md)。以下命令保留为第一课复习：
+现在从 [Week4 Lesson1](../week4/LESSON_01.md) 开始。复习本周时读 [Lesson4实验报告](LESSON_04_RESULTS.md) 与容差审阅，理解实测与验收的区别。以下命令仅供配置复习：
 
 ```bash
 cd /home/ubuntu/infer-engine
