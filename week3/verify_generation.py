@@ -20,7 +20,7 @@ ACCEPTANCE = ['用一句话解释 KV Cache。', '计算 2+3，只输出结果。
 CONTINUATION = '缓存复用历史信息。'
 
 
-def compare_logits(reference, candidate):
+def compare_logits(reference, candidate):#数值比较函数，比较输出得分的一致性
     for x in (reference, candidate):
         if (not isinstance(x, torch.Tensor) or x.ndim != 2 or x.shape[0] != 1
                 or x.shape[1] < 2 or not torch.isfinite(x).all().item()):

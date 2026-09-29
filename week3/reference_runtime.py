@@ -109,7 +109,7 @@ def validate_ids(ids, vocab_size=None):
         raise ValueError("token ID 越界")
 
 
-def forward_last(model, ids, *, processed_tokens=0, cache=None, use_cache=True):
+def forward_last(model, ids, *, processed_tokens=0, cache=None, use_cache=True):#跑一次模型前向，返回最后一个位置logits和更新后的缓存
     """Return [1,V] last logits and updated state; no hidden per-request state here."""
     vocab = model.config.text_config.vocab_size
     validate_ids(ids, vocab)
