@@ -1,0 +1,10 @@
+test_fixed_prefix_inputs_positions_and_error_detection (week3.test_verify_generation.VerificationTests.test_fixed_prefix_inputs_positions_and_error_detection) ... ok
+test_matching_argmax_does_not_hide_error (week3.test_verify_generation.VerificationTests.test_matching_argmax_does_not_hide_error) ... ok
+test_metrics_and_top1_disagreement (week3.test_verify_generation.VerificationTests.test_metrics_and_top1_disagreement) ... ok
+test_tolerance_requires_approval_and_matching_fingerprint (week3.test_verify_generation.VerificationTests.test_tolerance_requires_approval_and_matching_fingerprint) ... ok
+test_zero_and_invalid_logits (week3.test_verify_generation.VerificationTests.test_zero_and_invalid_logits) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.051s
+
+OK

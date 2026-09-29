@@ -1,0 +1,120 @@
+test_fixed_prefix_inputs_positions_and_error_detection (week3.test_verify_generation.VerificationTests.test_fixed_prefix_inputs_positions_and_error_detection) ... FAIL
+test_matching_argmax_does_not_hide_error (week3.test_verify_generation.VerificationTests.test_matching_argmax_does_not_hide_error) ... FAIL
+test_metrics_and_top1_disagreement (week3.test_verify_generation.VerificationTests.test_metrics_and_top1_disagreement) ... FAIL
+test_tolerance_requires_approval_and_matching_fingerprint (week3.test_verify_generation.VerificationTests.test_tolerance_requires_approval_and_matching_fingerprint) ... FAIL
+test_zero_and_invalid_logits (week3.test_verify_generation.VerificationTests.test_zero_and_invalid_logits) ... FAIL
+
+======================================================================
+FAIL: test_fixed_prefix_inputs_positions_and_error_detection (week3.test_verify_generation.VerificationTests.test_fixed_prefix_inputs_positions_and_error_detection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 10, in setUp
+    self.v = importlib.import_module('week3.verify_generation')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/enter/envs/nanovllm/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'week3.verify_generation'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 12, in setUp
+    self.fail('verification module not implemented')
+AssertionError: verification module not implemented
+
+======================================================================
+FAIL: test_matching_argmax_does_not_hide_error (week3.test_verify_generation.VerificationTests.test_matching_argmax_does_not_hide_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 10, in setUp
+    self.v = importlib.import_module('week3.verify_generation')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/enter/envs/nanovllm/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'week3.verify_generation'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 12, in setUp
+    self.fail('verification module not implemented')
+AssertionError: verification module not implemented
+
+======================================================================
+FAIL: test_metrics_and_top1_disagreement (week3.test_verify_generation.VerificationTests.test_metrics_and_top1_disagreement)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 10, in setUp
+    self.v = importlib.import_module('week3.verify_generation')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/enter/envs/nanovllm/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'week3.verify_generation'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 12, in setUp
+    self.fail('verification module not implemented')
+AssertionError: verification module not implemented
+
+======================================================================
+FAIL: test_tolerance_requires_approval_and_matching_fingerprint (week3.test_verify_generation.VerificationTests.test_tolerance_requires_approval_and_matching_fingerprint)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 10, in setUp
+    self.v = importlib.import_module('week3.verify_generation')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/enter/envs/nanovllm/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'week3.verify_generation'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 12, in setUp
+    self.fail('verification module not implemented')
+AssertionError: verification module not implemented
+
+======================================================================
+FAIL: test_zero_and_invalid_logits (week3.test_verify_generation.VerificationTests.test_zero_and_invalid_logits)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 10, in setUp
+    self.v = importlib.import_module('week3.verify_generation')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/enter/envs/nanovllm/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'week3.verify_generation'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 12, in setUp
+    self.fail('verification module not implemented')
+AssertionError: verification module not implemented
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.002s
+
+FAILED (failures=5)

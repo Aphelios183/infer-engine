@@ -1,0 +1,15 @@
+test_isolation_exercises_decode_error_and_same_generation_entry (week3.test_verify_generation.VerificationTests.test_isolation_exercises_decode_error_and_same_generation_entry) ... ERROR
+
+======================================================================
+ERROR: test_isolation_exercises_decode_error_and_same_generation_entry (week3.test_verify_generation.VerificationTests.test_isolation_exercises_decode_error_and_same_generation_entry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 20, in test_isolation_exercises_decode_error_and_same_generation_entry
+    self.assertEqual(failure['fault']['phase'], 'decode')
+                     ~~~~~~~^^^^^^^^^
+KeyError: 'fault'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.036s
+
+FAILED (errors=1)

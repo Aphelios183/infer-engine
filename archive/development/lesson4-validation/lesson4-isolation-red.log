@@ -1,0 +1,24 @@
+test_isolation_exercises_decode_error_and_same_generation_entry (week3.test_verify_generation.VerificationTests.test_isolation_exercises_decode_error_and_same_generation_entry) ... ERROR
+
+======================================================================
+ERROR: test_isolation_exercises_decode_error_and_same_generation_entry (week3.test_verify_generation.VerificationTests.test_isolation_exercises_decode_error_and_same_generation_entry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/infer-engine/week3/test_verify_generation.py", line 14, in test_isolation_exercises_decode_error_and_same_generation_entry
+    r = self.v.verify_isolation(None, torch.tensor([[1,2]]), torch.tensor([[3]]), torch.tensor([[4,5]]), {1}, limits=dict(max_abs=0., mean_abs=0., relative_l2=0.))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/week3/verify_generation.py", line 151, in verify_isolation
+    run_greedy(model, prompt_a, eos, 4)
+  File "/home/ubuntu/infer-engine/week3/minimal_generate.py", line 37, in run_greedy
+    logits, cache = step(model, current_ids, processed_tokens=start,
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/week3/reference_runtime.py", line 114, in forward_last
+    vocab = model.config.text_config.vocab_size
+            ^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'config'
+phase=prefill, processed_tokens=0
+
+----------------------------------------------------------------------
+Ran 1 test in 0.030s
+
+FAILED (errors=1)

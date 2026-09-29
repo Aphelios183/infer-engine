@@ -4,11 +4,13 @@
 
 当前课程工作区：`/home/ubuntu/infer-engine`，分支 `main`。最新课程已整合回主目录；直接从这里运行本课命令。
 
+当前进度：[Lesson 4](LESSON_04.md) 已进入真实模型校准/诊断阶段。对拍工具已实现，候选容差审阅未通过，正式验收未完成；见[实验报告](LESSON_04_RESULTS.md)。
+
 ## 学习方式
 
 每课按“读概念 → 预测结果 → 自己动手 → 运行验证 → 解释差异 → 验收”推进。
 脚本测试通过不等于你已经掌握；老师提供检查工具，你完成关键推导和练习。
-当前进入 [Lesson 3](LESSON_03.md)：先理解引用、快照与缓存字节，再逐步实现混合状态观察器。Lesson 2生成循环已接通，计数字段已讲解纠正；Lesson 3观察器和真实形状/选定层更新实验已完成；完整请求隔离与数值对拍待验收。Lesson 1B 核心问答已完成，真实 tokenizer 已验证；层分类手写代码未提交，按用户选择不阻塞进入下一课。
+Lesson 2生成循环已接通；Lesson 3观察器和真实形状/选定层更新实验已完成。Lesson 4 已运行相同前缀和请求隔离诊断，因容差未批准不能记为正式验收通过。Lesson 1B 核心问答已完成，真实 tokenizer 已验证；层分类手写代码未提交，按用户选择不阻塞进入下一课。
 
 ## 课程与工程任务对应
 
@@ -17,8 +19,8 @@
 | Lesson 1A | 混合模型为什么不能全层套 KV 公式？ | 推导形状、枚举层索引、计算 Full Attention KV | Tasks 1–2：配置解析与离线检查工具已验证；完成本课问答 |
 | Lesson 1B | 文本怎样变成模型输入？ | 对比原文/模板、IDs、EOS、thinking 设置，检查编码一致性 | Task 2 工具 + Task 3 资产准备：真实 tokenizer 已验证；ModelScope 固定版本资产已下载，完整自动化资产校验模块仍待实现 |
 | Lesson 2 | 第一个输出 token 从哪里来？ | 先读一次 forward，再亲手写 prefill/decode/停止循环 | Tasks 3–5：固定模型资产，参考 forward，手写生成循环 |
-| Lesson 3（当前） | 混合模型到底缓存了什么？ | 检查 KV 与 recurrent/conv state 的形状、dtype、存储及请求隔离 | Task 6：实际状态快照，不只读配置猜测 |
-| Lesson 4 | 增量计算真的正确吗？ | 固定相同 token 前缀，逐步比较全重算/缓存路径 logits | Task 7：teacher forcing，独立校准并冻结容差 |
+| Lesson 3 | 混合模型到底缓存了什么？ | 检查 KV 与 recurrent/conv state 的形状、dtype、存储及请求生命周期 | Task 6：观测完成，数值隔离待下一课 |
+| Lesson 4（当前） | 增量计算真的正确吗？ | 固定相同 token 前缀，逐步比较全重算/缓存路径 logits | Task 7：真实诊断已运行；候选容差未批准，正式验收待完成 |
 | 本周验收 | 别人能否复现你的结论？ | 三条短提示词、停止原因、环境与原始结果报告 | Task 8：可复现实验与限制说明 |
 
 设计与详细实现计划供查阅，不要求初学者先读完：
@@ -27,7 +29,7 @@
 
 ## 现在从哪里开始
 
-当前先读 [Lesson 03](LESSON_03.md) 第1–3节，运行CPU引用/快照实验。Lesson 2真实运行保留在 [生成报告](LESSON_02_GENERATION_RESULTS.md)。以下命令保留为第一课复习：
+当前先读 [Lesson 4 实验报告](LESSON_04_RESULTS.md) 与容差审阅，理解“有实测数据”与“验收通过”的区别。Lesson 2真实运行保留在 [生成报告](LESSON_02_GENERATION_RESULTS.md)。以下命令保留为第一课复习：
 
 ```bash
 cd /home/ubuntu/infer-engine
@@ -52,7 +54,8 @@ CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/py
 - [x] ModelScope 固定 revision 下载，Git LFS 完整性校验。
 - [ ] 通用资产 manifest/校验模块（原 Task 3）仍待实现，下载操作不代表整个任务完成。
 - [x] 权重加载、真实 forward、手写生成循环；三条短提示词验证完成。
-- [ ] 全重算/缓存数值对拍与请求状态隔离验收（未完成）。
+- [x] 全重算/缓存对拍工具、独立校准与真实请求隔离诊断。
+- [ ] 容差审阅冻结及正式数值/隔离验收（未完成）。
 - [x] 只读混合状态观察器、CPU测试与真实观察报告（见 [Lesson 3报告](LESSON_03_RESULTS.md)）。
 - [ ] 逐步logits对拍及完整请求隔离验收。
 
@@ -73,7 +76,7 @@ CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/py
 CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 /home/ubuntu/enter/envs/nanovllm/bin/python -B -m unittest week3.test_inspect_model -v
 ```
 
-默认跳过的真实 tokenizer 测试不算通过；2026-09-28 已显式运行新模型集成测试并通过。当前进入Lesson 3混合状态观察，随后才做Lesson 4数值对拍。不要复用旧模型 token 数和 EOS。
+默认跳过的真实 tokenizer 测试不算通过；2026-09-28 已显式运行新模型集成测试并通过。Lesson 4 已运行真实数值诊断，但未批准容差、未通过正式验收。不要复用旧模型 token 数和 EOS。
 
 ## 边界与后续衔接
 

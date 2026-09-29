@@ -1,0 +1,30 @@
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 9616.49it/s]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/ubuntu/infer-engine/week3/verify_generation.py", line 300, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/ubuntu/infer-engine/week3/verify_generation.py", line 285, in main
+    result = calibrate(args.model, args.device) if args.calibrate else verify(args.model, args.device, args.tolerance_file)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/week3/verify_generation.py", line 198, in calibrate
+    fp = fingerprint(root)
+         ^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/week3/verify_generation.py", line 181, in fingerprint
+    files={name: sha(root/name) for name in ('config.json', 'tokenizer.json', 'tokenizer_config.json', 'generation_config.json')},
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/week3/verify_generation.py", line 181, in <dictcomp>
+    files={name: sha(root/name) for name in ('config.json', 'tokenizer.json', 'tokenizer_config.json', 'generation_config.json')},
+                 ^^^^^^^^^^^^^^
+  File "/home/ubuntu/infer-engine/week3/verify_generation.py", line 171, in sha
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/enter/envs/nanovllm/lib/python3.11/pathlib.py", line 1050, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/enter/envs/nanovllm/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/ubuntu/huggingface/Qwen3.5-4B/generation_config.json'

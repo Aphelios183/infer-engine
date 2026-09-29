@@ -1,0 +1,6 @@
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 18527.91it/s]
+PREFIX 用一句话解释 KV Cache。 diagnostic 0.25
+PREFIX 计算 2+3，只输出结果。 diagnostic 0.1875
+PREFIX What is prefill in language model inference? diagnostic 0.1875
+RESULT week3/results/qwen35-lesson4-diagnostic-v2.json diagnostic
