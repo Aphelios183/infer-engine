@@ -5,6 +5,8 @@
 - [总路线图](ROADMAP.md)
 - [现在开始：Week 4 逐课计划](week4/PLAN.md)
 - [Week 4 Lesson 1：真实请求链路](week4/LESSON_01.md)
+- [当前：Week 4 Lesson 2——调度、分页与混合状态准入](week4/LESSON_02.md)
+- [Qwen3.5 × nano-vLLM 逐课改进主线](week4/QWEN35_ADAPTATION.md)
 - [nano-vLLM 与正式 vLLM 对照](week4/FRAMEWORK_COMPARISON.md)
 - [Week 4 结课验收](week4/ASSESSMENT.md)
 - [Week 3 逐课记录](week3/PLAN.md)

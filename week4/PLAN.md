@@ -13,7 +13,7 @@
 ## 课程契约与进度
 
 - [x] 建立课程、真实源码入口、正式 vLLM 对照和结课标准。
-- [ ] Lesson 1 请求生命周期。
+- [x] Lesson 1 概念验收：请求生命周期（见[验收记录](LESSON_01_ASSESSMENT.md)；独立源码 trace 尚未验收）。
 - [ ] Lesson 2 调度与分页缓存。
 - [ ] Lesson 3 ModelRunner、张量布局与执行边界。
 - [ ] Lesson 4 Qwen3.5 模型与状态契约。
@@ -28,7 +28,7 @@
 
 - 主目录 /home/ubuntu/infer-engine；参考 nano-vLLM 位于 /home/ubuntu/t1/nano-vllm-main/nano-vllm-main；InferLab 位于 /home/ubuntu/infra-main。
 - 参考目录已有用户注释，当前只读，不直接改写；开始代码适配前固定来源和导入路径，在主目录内建立明确实现边界，避免导入环境里另一份 nanovllm。
-- 正式 vLLM 对照固定到 v0.18.2 文档入口，作为版本化读本，不声称是最新版本，也不声称已在服务器运行。更换版本必须更新对照说明。
+- 正式 vLLM 以用户上传的 /home/ubuntu/vllm-main/vllm-main 源码为当前对照；其提交版本未确认，不等同于此前 v0.18.2 文档基线。源码入口见对照卡，不声称已运行正式 vLLM。
 - 不安装/升级 vLLM、torch 或快算子，不在 nanovllm 环境混装正式 vLLM；如后续需要实跑，另行确认独立环境方案。
 - Week 3 数值状态仍是 diagnostic；不能写“已通过”。框架学习可继续，原生适配正确性与性能结论仍需要对应证据。
 - 首个 Qwen3.5 路径禁用未经验证的 prefix reuse、chunked prefill、抢占恢复与 CUDA Graph；现有代码不一定有这些开关，须实现显式拒绝/限制并测试，不能只在文档说关闭。
@@ -38,7 +38,7 @@
 ## 每一课都必须留下四项证据
 
 1. nano-vLLM：真实文件、函数、输入输出与一次状态变化。
-2. vLLM V1：对应职责入口、至少一个机制差别、固定版本官方链接。
+2. vLLM V1：本地对应职责入口、至少一个机制差别、来源路径；文档链接需注明其版本与本地源码不一定相同。
 3. Qwen3.5：哪些假设不能沿用、此次改动属于控制层还是模型/算子层。
 4. 验证：手推结果、运行证据、失败用例，以及未验证范围。
 
@@ -58,6 +58,8 @@
 从[Lesson 01](LESSON_01.md)开始，不需要启动 GPU。
 
 ## Lesson 2：调度器和 BlockManager 各管什么
+
+**当前课程：** [Lesson 02](LESSON_02.md)。从本课起，按[Qwen3.5 适配主线](QWEN35_ADAPTATION.md)把读源码、改 nano-vLLM、测试和正式 vLLM 对照绑定，不另开脱离项目的模型理论线。
 
 **Read:** engine/scheduler.py、engine/block_manager.py、Sequence.block_table。
 **Files（计划）:** week4/notes/scheduler_trace.md；实现练习时新增独立 CPU 测试文件，不改源目录。
@@ -86,7 +88,7 @@
 ## Lesson 4：Qwen3.5 适配不是换模型名
 
 **Read:** config.py、models/qwen3.py、utils/loader.py、ModelRunner.__init__/allocate_kv_cache；对照 Week 3 配置与正式 vLLM Qwen3.5 源码文档。
-**Files（计划）:** week4/QWEN35_ADAPTATION.md；实现前在该文件明确接口、来源与兼容范围。
+**Files：** week4/QWEN35_ADAPTATION.md 已建立逐课适配主线；本课细化模型与状态接口，再进行相应实现。
 
 - [ ] 列出 text_config、模型类、权重名称/packed投影、RoPE/gate、EOS来源、采样、KV层数、linear状态的差异。
 - [ ] 固定 Full Attention 原始索引 [3,7,11,15,19,23,27,31] 与紧凑KV索引0..7的映射；不能把32层都分普通KV。
@@ -123,4 +125,4 @@
 
 ## 现在的边界
 
-本轮只写课程和源码对照，不执行模型、不安装vLLM、不改nano-vLLM/InferLab源目录。下一步在当前任务逐课执行Lesson1，完成读图和一次trace后推进。
+本次更新只写课程和源码对照，不执行模型、不安装vLLM、不改外部nano-vLLM/InferLab源目录。当前进入Lesson2；后续实现放在主目录内固定来源的适配副本，逐课小改动、测试、讲解，不一次性代写完整引擎。

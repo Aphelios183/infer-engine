@@ -1,7 +1,19 @@
 # nano-vLLM 与正式 vLLM：逐课对照卡
 
 核查日期：2026-09-29。本地读本为 /home/ubuntu/t1/nano-vllm-main/nano-vllm-main，含用户注释；未取得可用Git提交，不能声称等同上游某个版本。
-正式vLLM选用v0.18.2文档的V1作为固定阅读基线，不是“当前最新”的承诺；本轮没有安装或运行正式vLLM。
+更新于2026-09-30：当前优先对照用户上传的 `/home/ubuntu/vllm-main/vllm-main` 源码。其Git版本未确认，不可标为v0.18.2；以下v0.18.2链接仅保留为历史文档读本。本轮没有安装或运行正式vLLM。
+
+## 当前本地 V1 源码入口
+
+以下路径相对于上述正式vLLM根目录，行号是本次阅读定位提示，后续以函数名为准：
+
+- `vllm/v1/engine/llm_engine.py`：`add_request`（223）、`step`（306），输入与输出侧职责。
+- `vllm/v1/engine/core.py`：`step`（630），schedule → execute_model(non_block=True) → grammar mask → future.result → update_from_output；`step_with_batch_queue` 是另一条执行路径。
+- `vllm/v1/core/sched/scheduler.py`：`schedule`（562），每请求待计算量与共享预算；`update_from_output`（1967）结算；`_update_request_with_output`（2434）追加与停止；`_free_request`（2650）及后续函数处理释放。
+
+Lesson1纠错：grammar bitmask是结构化输出约束，不是训练正则化。非阻塞提交提供CPU/GPU重叠机会，不证明实际重叠或多轮流水；`future.result()`仍可能等待。请求接入也不能全部归到EngineCore.step。资源释放可能因在途执行或connector延后，不能把nano的同步释放照搬过去。
+
+Lesson2注意：源码的`num_new_tokens`还涉及output placeholders、token/input预算、模型长度和混合状态对齐等限制；“追上num_tokens_with_spec”是理解核心，不是完整生产公式，也不表示所有输入已经执行完成。
 
 ## 1. 请求入口与执行职责（Lesson 1/3）
 
