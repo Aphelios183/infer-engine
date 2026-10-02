@@ -3,6 +3,8 @@
 当前主线：Qwen3.5-4B。工作目录：`/home/ubuntu/infer-engine`。
 
 - [总路线图](ROADMAP.md)
+- [面试能力耦合计划：项目、C++、性能与逐课追问](INTERVIEW_PLAN.md)
+- [2026-10-01面经与官方岗位调研（含来源限制）](docs/INTERVIEW_RESEARCH_2026-10-01.md)
 - [现在开始：Week 4 逐课计划](week4/PLAN.md)
 - [Week 4 Lesson 1：真实请求链路](week4/LESSON_01.md)
 - [当前：Week 4 Lesson 2——调度、分页与混合状态准入](week4/LESSON_02.md)

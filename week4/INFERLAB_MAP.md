@@ -4,6 +4,8 @@
 
 ## 三层职责
 
+2026-10-01面试耦合：当前仍只读映射；Week4末满足构建条件后再选择一个小测试目标。Week5重点补C++资源所有权与回滚；Week7可做调度背压或局部性对照。参考接口已核查：PagedKVCacheManager::can_fit_request/add_request/append_tokens/release_request，以及ContinuousBatchScheduler::submit/step。具体逐周验收见[面试计划](../INTERVIEW_PLAN.md)，不将助手写的Python模拟测试当成C++或真实模型实现。
+
 README将项目分为原生C++/可选CUDA机制层、Python实验编排层、结果产物层。
 学习时先找机制接口，再看一个测试，不从全部benchmark或治理脚本入手。
 
