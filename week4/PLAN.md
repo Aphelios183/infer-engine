@@ -15,8 +15,8 @@
 - [x] 建立课程、真实源码入口、正式 vLLM 对照和结课标准。
 - [x] Lesson 1 概念验收：请求生命周期（见[验收记录](LESSON_01_ASSESSMENT.md)；独立源码 trace 尚未验收）。
 - [ ] Lesson 2 调度与分页缓存。
-- [ ] Lesson 3 ModelRunner、张量布局与执行边界。
-- [ ] Lesson 4 Qwen3.5 模型与状态契约。
+- [x] Lesson 3 Runner概念验收经纠错通过；独立代码验收仍待完成。
+- [ ] Lesson 4 Qwen3.5 模型与状态契约（当前课程，见[Lesson04](LESSON_04.md)；配置/层映射已落地，原生执行未实现）。
 - [ ] Lesson 5 请求重排、释放和最小接入。
 - [ ] Lesson 6 InferLab 映射、框架复述与独立改动。
 - [ ] 完成[结课验收](ASSESSMENT.md)。
@@ -89,6 +89,8 @@
 
 ## Lesson 4：Qwen3.5 适配不是换模型名
 
+2026-10-07起使用[Lesson04](LESSON_04.md)与 `/home/ubuntu/infer-engine/nanovllm_qwen35` 适配副本。外部参考目录只读；来源指纹、运行命令、实现边界见[副本说明](../nanovllm_qwen35/ADAPTATION.md)。先CPU配置契约，再状态接口和真实模型，不预先宣告原生适配完成。
+
 **Read:** config.py、models/qwen3.py、utils/loader.py、ModelRunner.__init__/allocate_kv_cache；对照 Week 3 配置与正式 vLLM Qwen3.5 源码文档。
 **Files：** week4/QWEN35_ADAPTATION.md 已建立逐课适配主线；本课细化模型与状态接口，再进行相应实现。
 
@@ -127,4 +129,4 @@
 
 ## 现在的边界
 
-本次更新只写课程和源码对照，不执行模型、不安装vLLM、不改外部nano-vLLM/InferLab源目录。当前进入Lesson2；后续实现放在主目录内固定来源的适配副本，逐课小改动、测试、讲解，不一次性代写完整引擎。
+当前进入Lesson4，已建立适配副本及CPU配置契约测试。未执行模型、不安装vLLM、不改外部nano-vLLM/InferLab源目录。实现放在主目录内固定来源的适配副本，逐课小改动、测试、讲解，不一次性代写完整引擎。

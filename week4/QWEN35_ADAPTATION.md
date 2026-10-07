@@ -6,7 +6,7 @@
 
 面试准备绑定本文件的适配增量，见[新增能力计划](../INTERVIEW_PLAN.md)。不得为填简历提前打开未经验证的Graph、前缀共享、分块或多卡；每项能力必须有代码入口、独立解释和正确性/性能证据。后续InferLab只承担小型C++机制补强，不另起完整混合模型重写。
 
-以下是待执行路线，不是已完成能力。参考nano-vLLM只读；首次实现时在 `/home/ubuntu/infer-engine` 内固定适配副本、来源指纹与导入路径，保留用户注释，明确上游已有代码和自己的改动。具体目录在首次实作时确认并记录。
+2026-10-07已在 `/home/ubuntu/infer-engine/nanovllm_qwen35` 建立适配副本，保留用户注释，来源SHA256见SOURCE_MANIFEST.json。当前新增配置契约、学生层映射函数及CPU测试，Qwen3.5原生执行被明确拒绝，尚未接入模型/状态池。后续路线不代表已完成能力，入口见[Lesson04](LESSON_04.md)与[副本说明](../nanovllm_qwen35/ADAPTATION.md)。
 
 主模型Qwen3.5-4B；起点为单卡、TP=1、eager、纯文本、单请求。先把错误功能显式拒绝，再扩展。原始实现已有普通KV分页、前缀复用和有限chunked prefill，这些不算我们新增能力。
 

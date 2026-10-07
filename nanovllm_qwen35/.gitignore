@@ -1,0 +1,5 @@
+# Parent repository ignores models/ as weights; this directory contains source.
+!nanovllm/models/
+!nanovllm/models/**
+__pycache__/
+*.pyc
