@@ -6,7 +6,7 @@
 
 Runner概念验收经纠错通过：packed输入、Q/K累计边界、物理token slot、请求state slot、logits/采样/追加职责、异常清理与历史回滚区别。仍须巩固边界算术与独立实现；不把口头通过当成GPU模型通过。
 
-学生已写build_layer_maps及正常结果断言；未知类型测试由助手补充。本课把它接到真实config.json，CPU运行证据见[副本验证记录](../nanovllm_qwen35/VERIFY.md)。Week3数值容差仍未批准。
+学生已写build_layer_maps及正常结果断言；未知类型测试由助手补充。本课把它接到真实config.json，当前进度见[后端核查](../nanovllm_qwen35/BACKEND_AUDIT.md)。历史CPU测试汇总已归档，Week3数值容差仍未批准。
 
 ## 1. 文件与当前范围
 
@@ -78,7 +78,7 @@ recurrent: [24, capacity, 32, 128, 128]
 | Config/契约解析 | 校验文本配置、层类型、结构尺寸、支持范围 |
 | Runner/存储池构建 | 实际分配KV与linear张量，核对布局与dtype |
 | BlockManager | 管理Full KV块号、引用与请求块表，不创建每轮GPU张量 |
-| StateManager（待实现） | 请求slot预留、初始化、所有权、归还；避免重复释放及陈旧映射 |
+| StateManager（CPU原型已实现） | 请求slot预留、初始化、所有权、归还；GPU在途安全与陈旧句柄保护待实现 |
 | Scheduler | 两类资源都满足才准入；处理等待/失败/结束 |
 | Runner | 按seqs顺序传递请求元数据，不每轮重置历史 |
 | Linear层/算子 | 消费本层索引和请求slot，读取并更新状态 |
@@ -120,6 +120,16 @@ InferLab继续读PagedKVCacheManager的can_fit_request/add_request及释放接�
 - [ ] 明确原始层号、紧凑层索引、请求slot、token slot四种索引。
 - [x] StateManager基础接口与所有权规则经课堂确认；CPU实现及12项新增测试已通过。
 - [ ] 学生独立解释allocate的初始化与提交顺序，并运行自己的边界测试。
-- [ ] StateManager与KV联合准入、Scheduler/Runner以及GPU安全生命周期接入。
+- [x] StateManager与真实BlockManager的CPU联合准入组件及失败回滚测试，见[下一部分](../nanovllm_qwen35/ADMISSION.md)。
+- [x] 联合准入接到独立CPU HybridScheduler队列/预算、结束/失败回收，见[调度器接线](../nanovllm_qwen35/SCHEDULER.md)；18项新增测试通过。
+- [x] CPU RunnerInputBuilder消费ScheduledBatch，构造token/KV地址/state_slots；13项新增测试通过，见[输入准备](../nanovllm_qwen35/RUNNER_INPUTS.md)。
+- [ ] 真正的模型执行、LLMEngine接线与GPU安全生命周期接入。
+- [x] CPU同步执行接口与合成后端验收，11项新增测试；见[执行接口](../nanovllm_qwen35/EXECUTION.md)。这不代表真实模型forward完成。
+- [x] 本机真实权重文件头、参考Full/GDN接口和CPU缓存dtype探针核查；见[后端核查](../nanovllm_qwen35/BACKEND_AUDIT.md)。未运行完整模型，待办见[优化记录](../nanovllm_qwen35/OPTIMIZATION_BACKLOG.md)。
+- [x] 纯文本权重映射与覆盖计划：426项匹配、共享head别名、显式排除vision/MTP；9项新增测试，全套85项通过。不是实际加载或forward通过。
+- [x] 参数存储骨架与严格CPU加载器：真实426项文本参数全字节验证、head共享存储；新增7项测试，全套92项通过。见后端核查第7节；仍未实现forward。
+- [x] 独立CPU单请求真实层计算：norm/Q-gate/partial RoPE、Full/GDN及Decoder层，小型参考对拍与缓存续算通过；新增12项，全套104项。见后端核查第8节；完整模型与分页池执行仍待接入。
+- [x] CPU多请求池接线：Full层映射→块表/token slot→KV池，GDN层映射→state_slot→原conv/recurrent池写回；新增9项，全套113项。见后端核查第9节；真实4B端到端与GPU仍待验证。
+- [x] 单卡L40真实4B短输入逐层诊断：原始参考有非零误差，GDN recurrent消融三步全层输出/logits为0差异；见后端核查第10节。M1标准尚未批准，M2只完成独立GPU参考路线，不是GPU引擎接线完成。
 
 面试复述：用3分钟说明“普通KV分页为什么不足以适配混合模型”，必须指出真实文件、测试、未实现部分，不把助手实现当个人独立完成。

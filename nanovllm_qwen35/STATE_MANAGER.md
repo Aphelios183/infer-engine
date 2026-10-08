@@ -36,6 +36,6 @@ cd /home/ubuntu/infer-engine/nanovllm_qwen35
 /home/ubuntu/enter/envs/nanovllm/bin/python -m unittest discover -s tests -p 'test_state_manager.py' -v
 ```
 
-先读 `test_zero_is_success_and_both_slices_are_initialized`，再读 `test_reuse_clears_all_layers_without_touching_neighbor`，最后读部分初始化失败回滚测试。全部回归含配置测试共24项已通过，见VERIFY.md。
+先读 `test_zero_is_success_and_both_slices_are_initialized`，再读 `test_reuse_clears_all_layers_without_touching_neighbor`，最后读部分初始化失败回滚测试。历史CPU测试汇总已按要求归档；当前GPU诊断见BACKEND_AUDIT.md。
 
 代码和新增测试由助手实现，不自动代表学生独立实作通过。下一步由学生解释“为什么初始化后才提交owners”；随后设计StateManager与BlockManager的联合准入，而不是直接加载GPU模型。

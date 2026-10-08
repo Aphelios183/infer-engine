@@ -1,0 +1,3240 @@
+{
+  "scope": "diagnostic only; no M1 tolerance approval or production GPU backend",
+  "reference_prefill": "recurrent_ablation",
+  "device": "NVIDIA L40",
+  "loading": {
+    "status": "cpu_parameters_loaded_forward_not_implemented",
+    "loaded_count": 426,
+    "verified_tensors": 0,
+    "unique_parameter_bytes": 8411510272,
+    "dtype_counts": {
+      "BF16": 378,
+      "F32": 48
+    },
+    "ignored_counts": {
+      "vision": 297,
+      "mtp": 15
+    },
+    "head_is_embedding_parameter": true,
+    "head_storage_matches": true
+  },
+  "prompt_ids": [
+    248045,
+    846,
+    198,
+    139054,
+    110827,
+    98419,
+    79852,
+    111734,
+    101680,
+    1710,
+    248046,
+    198,
+    248045,
+    74455,
+    198,
+    248068,
+    271,
+    248069,
+    271
+  ],
+  "dtype_policy": "checkpoint parameter dtypes; BF16 recurrent storage; FP32 recurrence arithmetic",
+  "local_note": "same layer input; own cache history can diverge across decode steps",
+  "results": [
+    {
+      "stage": "prefill",
+      "input_tokens": 19,
+      "layers": [
+        {
+          "layer": 0,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 1,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 2,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 3,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 4,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 5,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 6,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 7,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 8,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 9,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 10,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 11,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 12,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 13,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 14,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 15,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 16,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 17,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 18,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 19,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 20,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 21,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 22,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 23,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 24,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 25,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 26,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 27,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 28,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 29,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 30,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 31,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        }
+      ],
+      "logits": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "relative_l2": 0.0,
+        "finite": true,
+        "diagnostic_close": true
+      },
+      "reference_token": 79852,
+      "native_token": 79852,
+      "first_local_flag": null
+    },
+    {
+      "stage": "decode_1",
+      "input_tokens": 1,
+      "layers": [
+        {
+          "layer": 0,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 1,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 2,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 3,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 4,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 5,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 6,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 7,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 8,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 9,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 10,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 11,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 12,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 13,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 14,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 15,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 16,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 17,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 18,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 19,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 20,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 21,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 22,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 23,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 24,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 25,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 26,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 27,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 28,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 29,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 30,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 31,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        }
+      ],
+      "logits": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "relative_l2": 0.0,
+        "finite": true,
+        "diagnostic_close": true
+      },
+      "reference_token": 220,
+      "native_token": 220,
+      "first_local_flag": null
+    },
+    {
+      "stage": "decode_2",
+      "input_tokens": 1,
+      "layers": [
+        {
+          "layer": 0,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 1,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 2,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 3,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 4,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 5,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 6,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 7,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 8,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 9,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 10,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 11,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 12,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 13,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 14,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 15,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 16,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 17,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 18,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 19,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 20,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 21,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 22,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 23,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 24,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 25,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 26,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 27,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        },
+        {
+          "layer": 28,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 29,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 30,
+          "type": "linear_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "conv": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "recurrent": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "state_dtype": "torch.bfloat16"
+        },
+        {
+          "layer": 31,
+          "type": "full_attention",
+          "accumulated": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "same_input": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "key": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          },
+          "value": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "relative_l2": 0.0,
+            "finite": true,
+            "diagnostic_close": true
+          }
+        }
+      ],
+      "logits": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "relative_l2": 0.0,
+        "finite": true,
+        "diagnostic_close": true
+      },
+      "reference_token": 111734,
+      "native_token": 111734,
+      "first_local_flag": null
+    }
+  ],
+  "reference_text": "KV 缓存",
+  "peak_allocated_bytes": 17134337024
+}
