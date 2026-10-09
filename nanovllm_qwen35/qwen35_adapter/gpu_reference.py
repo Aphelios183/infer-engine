@@ -23,7 +23,7 @@ def metric(actual, expected):
 
 
 @torch.inference_mode()
-def run(model_dir, output, steps=2, recurrent_reference=False):
+def run(model_dir, output, steps=2, recurrent_reference=False, length=None, chunk_native=False):
     if not 0 <= steps <= 4: raise ValueError('bounded diagnostic: decode steps 0..4')
     if not torch.cuda.is_available(): raise RuntimeError('CUDA is required')
     torch.set_num_threads(2)
@@ -31,6 +31,7 @@ def run(model_dir, output, steps=2, recurrent_reference=False):
     torch.backends.cudnn.allow_tf32=False
     params,loading=load_text_parameters(model_dir)
     c=params.config['text_config']
+    if chunk_native: c['gdn_prefill_backend']='hf_torch_chunk'
     config=Qwen3_5TextConfig(**c)
     config._attn_implementation='eager'
     with torch.device('meta'):
@@ -49,7 +50,10 @@ def run(model_dir, output, steps=2, recurrent_reference=False):
     rendered=tokenizer.apply_chat_template([{'role':'user','content':'请用一句话说明KV缓存的作用。'}],
                                         tokenize=False,add_generation_prompt=True,enable_thinking=False)
     prompt=tokenizer(rendered,add_special_tokens=False)['input_ids']
-    if len(prompt)>64: raise ValueError('diagnostic prompt exceeds 64 tokens')
+    if length is not None:
+        if not 1<=length<=512: raise ValueError('diagnostic length 1..512')
+        prompt=(prompt*((length+len(prompt)-1)//len(prompt)))[:length]
+    if len(prompt)>512: raise ValueError('diagnostic prompt exceeds 512 tokens')
     cache=DynamicCache(config=config)
     native_states=[None]*len(params.model.layers)
     local_states=[None]*len(params.model.layers)
@@ -114,4 +118,5 @@ if __name__=='__main__':
     p.add_argument('--model-dir',required=True);p.add_argument('--output',required=True)
     p.add_argument('--decode-steps',type=int,default=2)
     p.add_argument('--recurrent-reference',action='store_true')
-    a=p.parse_args();run(a.model_dir,a.output,a.decode_steps,a.recurrent_reference)
+    p.add_argument('--length',type=int);p.add_argument('--chunk-native',action='store_true')
+    a=p.parse_args();run(a.model_dir,a.output,a.decode_steps,a.recurrent_reference,a.length,a.chunk_native)

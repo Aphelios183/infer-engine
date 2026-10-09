@@ -10,6 +10,7 @@ import torch
 
 
 class StateManager:
+    device_type = 'cpu'
     def __init__(self, conv_pool: torch.Tensor, recurrent_pool: torch.Tensor):
         # [linear_layer, request_slot, ...]; dtype is explicit in supplied pools.
         for name, pool, rank in (
@@ -17,7 +18,7 @@ class StateManager:
         ):
             if not isinstance(pool, torch.Tensor):
                 raise TypeError(f'{name} pool must be a tensor')
-            if pool.device.type != 'cpu':
+            if pool.device.type != self.device_type:
                 raise ValueError('CPU-only prototype: GPU lifetime safety is not implemented')
             if pool.ndim != rank or any(d <= 0 for d in pool.shape):
                 raise ValueError(f'{name} pool must have rank {rank} and positive dimensions')
@@ -25,6 +26,8 @@ class StateManager:
                 raise ValueError(f'{name} pool must be contiguous floating inference storage')
         if conv_pool.shape[:2] != recurrent_pool.shape[:2]:
             raise ValueError('pools must share layer count and slot capacity')
+        if conv_pool.device != recurrent_pool.device:
+            raise ValueError('pools must share device')
         if conv_pool.untyped_storage().data_ptr() == recurrent_pool.untyped_storage().data_ptr():
             raise ValueError('conv and recurrent pools must not share storage')
         self.conv_pool = conv_pool

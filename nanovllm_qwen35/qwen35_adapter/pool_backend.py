@@ -13,6 +13,7 @@ from .layer_compute import FullState, GDNState, decoder_layer, rms_norm
 
 class PooledCPUBackend:
     execution_mode = 'cpu_sync'
+    device_type = 'cpu'
 
     def __init__(self, scheduler, parameters, kv_pool):
         if not parameters.loaded:
@@ -30,7 +31,8 @@ class PooledCPUBackend:
         expected = (2,len(self.full_map),len(bm.blocks),bm.block_size,
                     c['num_key_value_heads'],c['head_dim'])
         dtype = parameters.model.embed_tokens.weight.dtype
-        if (kv_pool.shape != expected or kv_pool.device.type != 'cpu'
+        self.device=parameters.model.embed_tokens.weight.device
+        if (kv_pool.shape != expected or kv_pool.device.type != self.device_type or kv_pool.device != self.device
                 or kv_pool.dtype != dtype or kv_pool.requires_grad or not kv_pool.is_contiguous()):
             raise ValueError('invalid KV pool shape/device/dtype/layout')
         conv_shape = (len(self.linear_map),self.states.capacity,*contract['conv_shape_per_layer_per_request'])
@@ -39,8 +41,10 @@ class PooledCPUBackend:
                 or self.states.conv_pool.dtype != dtype
                 or self.states.recurrent_pool.dtype not in (torch.float32,torch.bfloat16)):
             raise ValueError('invalid linear pool shape/dtype')
+        if self.states.conv_pool.device != self.device or self.states.recurrent_pool.device != self.device:
+            raise ValueError('state pools must share model device')
         for p in parameters.parameters():
-            if p.device.type != 'cpu' or p.requires_grad:
+            if p.device != self.device or p.requires_grad:
                 raise ValueError('CPU inference parameters required')
         stores = [kv_pool,self.states.conv_pool,self.states.recurrent_pool]
         ptrs = [x.untyped_storage().data_ptr() for x in stores]
@@ -69,7 +73,7 @@ class PooledCPUBackend:
         batch = self._check_inputs(inputs)
         # From this point failure requires whole-batch disposal, not a retry.
         self._attempted_batch = batch
-        x = F.embedding(inputs.input_ids,self.parameters.model.embed_tokens.weight)
+        x = F.embedding(inputs.input_ids.to(self.device),self.parameters.model.embed_tokens.weight)
         edges = inputs.cu_seqlens_q.tolist()
         c = self.config
         for layer_id, params in enumerate(self.parameters.model.layers):
@@ -78,7 +82,7 @@ class PooledCPUBackend:
                 a,b = edges[row:row+2]
                 end = inputs.context_lens[row].item()
                 past = end-(b-a)
-                positions = inputs.positions[a:b].unsqueeze(0)
+                positions = inputs.positions[a:b].unsqueeze(0).to(self.device)
                 state_slot = inputs.state_slots[row].item()
                 if self.states.lookup(request_id) != state_slot:
                     raise ValueError('state owner changed during execution')
@@ -89,6 +93,7 @@ class PooledCPUBackend:
                     vpool = self.kv_pool[1,idx].view_as(kpool)
                     logical = torch.arange(past,dtype=torch.int64)
                     addresses = inputs.block_tables[row,logical//self.block_size].long()*self.block_size + logical%self.block_size
+                    addresses=addresses.to(self.device)
                     old = None if past==0 else FullState(
                         kpool.index_select(0,addresses).transpose(0,1).unsqueeze(0),
                         vpool.index_select(0,addresses).transpose(0,1).unsqueeze(0))
@@ -100,7 +105,7 @@ class PooledCPUBackend:
                 out,new = decoder_layer(x[a:b].unsqueeze(0),positions,params,c,layer_id,old,
                                         state_dtype=self.states.recurrent_pool.dtype)
                 if layer_id in self.full_map:
-                    slots = inputs.slot_mapping[a:b].long()
+                    slots = inputs.slot_mapping[a:b].long().to(self.device)
                     # Only append current tokens. Do not rewrite historical or padding slots.
                     kpool.index_copy_(0,slots,new.key[0,:,past:,:].transpose(0,1))
                     vpool.index_copy_(0,slots,new.value[0,:,past:,:].transpose(0,1))

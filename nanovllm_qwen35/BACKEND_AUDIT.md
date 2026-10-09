@@ -251,3 +251,58 @@ CUDA_VISIBLE_DEVICES=2 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 /home/ubuntu/enter/en
 首次试跑在构造token张量时遇到当前tokenizer返回类型差异，未进入forward；已改为模板渲染字符串后tokenize(add_special_tokens=False)，避免重复特殊token。
 
 下一步：对齐原始chunk Prefill实现或制定经过更多输入/长度验证的数值标准，再将GPU层执行接入GPU池和同步生命周期。本次已建立真实单卡参考路线和首个误差来源定位，没有声称GPU推理框架全部完成。纯CPU测试.md已归档删除，测试代码保留用于回归。
+
+## 11. 原始chunk对齐与单卡GPU引擎入口（已完成首版）
+
+2026-10-08，物理GPU2 L40。实现`gpu_engine.py`、公开入口`nanovllm/qwen35.py`，验证脚本`verify_gpu_engine.py`。没有改动来源目录、安装环境、旧Qwen3引擎路径或它的Qwen3.5拒绝保护。
+
+### GDN对齐方式
+
+配置`gdn_prefill_backend='hf_torch_chunk'`时，Prefill调用本机Transformers原始torch_chunk_gated_delta_rule，保留原始Q/K dtype、L2归一化、beta/g与chunk计算次序；不是自研chunk内核，也不是把参考换成recurrent后的消融结果。Decode继续使用已经对齐的递推实现，持久状态为BF16。参考仍为原始HF eager/chunk路径，共享只读真实权重、独立缓存。
+
+65-token逐层专门对拍：Prefill和两步Decode logits均零差异，结果`gpu_chunk_65.json`。GPU引擎进一步覆盖长度1、3、19、63、64、65、128、257和双请求[63,65]；每组Prefill+2次Decode，总27个步骤，logits均逐元素完全一致，token一致；各步逐层原KV池、conv池、recurrent池也与参考缓存逐元素一致。结果`gpu_engine_results.json`。
+
+双请求初次测试出现0.03125的logits差，保留其定位过程：LM Head按整个batch做BF16矩阵乘法与逐请求参考选择了不同数值路径。首版GPU后端改为逐请求LM Head计算后27步精确通过，未放宽容差。后续恢复批量GEMM需单独评估误差/性能，不能误称它是缓存串请求问题。
+
+### 资源与执行安全
+
+GPUStateManager继承所有权规则但接受同设备CUDA池，slot初始化完成并同步后才提交所有权，release前再次同步。GPUExecutionRunner组织输入→GPU模型→logits→贪心/温度采样→同步→postprocess；错误时先尝试确认GPU无在途访问，再整批失败回收。
+
+同步失败则设置poisoned，保留pending与资源、不回收、不再运行；需要重启执行器/进程。这条隔离分支用mock单元测试验证，不主动制造硬件故障。实际GPU测试注入的是forward后、logits阶段的主机异常，验证同步后回收且后续新请求能够正常运行。只支持串行单线程管理，使用保守设备级同步，不是异步并发流引擎。
+
+Full KV由GPU池真实保存；历史按块表gather为稠密张量后执行eager attention。GDN状态按紧凑层号和slot读写GPU池。已验证跨块、双请求重排和多轮资源复用；测试block_size=64，公开默认256，未依赖原Triton的块大小限制。
+
+### 可直接运行的显式入口
+
+```python
+from nanovllm.qwen35 import Qwen35LLM
+from nanovllm import SamplingParams
+
+engine = Qwen35LLM('/home/ubuntu/huggingface/Qwen3.5-4B',
+                  device='cuda:0', max_model_len=512, max_num_seqs=2,
+                  greedy=True)
+try:
+    prompt = engine.tokenizer.apply_chat_template(
+        [{'role':'user','content':'请用一句话说明KV缓存的作用。'}],
+        tokenize=False, add_generation_prompt=True, enable_thinking=False)
+    outputs = engine.generate([prompt], SamplingParams(max_tokens=64))
+    print(outputs[0]['text'])
+finally:
+    engine.close()
+```
+
+在适配副本根目录运行；用CUDA_VISIBLE_DEVICES=2将物理卡2映射为cuda:0。原`from nanovllm import LLM`不改路由，Qwen3.5必须使用上述显式入口。字符串按已准备的文本tokenize，不自动重复套chat template；也支持token ID列表。
+
+greedy=True明确采用argmax（忽略temperature），不是声称复用原nano随机Sampler；greedy=False使用temperature+multinomial，不能与原nano随机序列要求一致。本次主要验收greedy路径。输入长度+生成预算必须不超过max_model_len，首版不支持prefix、chunk调度、抢占、TP、Graph、多模态、量化。未知构造参数不会被静默接受。
+
+### 生成与边界测试
+
+真实问题生成32个新token后按length停止，文本为“KV 缓存通过存储模型在处理历史上下文时生成的键值对，避免在生成新 token 时重复计算已处理过的输入，从而显著降低”。它因预算截断，不当作完整回答。另测试真实forward后强制EOS、零生成预算、主机异常回收与恢复，均通过；强制EOS不是自然生成EOS的证明。
+
+GPU验证peak allocated=8,743,364,096字节，参考与引擎共享只读权重；该值包含诊断缓存和临时张量，不是性能指标或最低显存保证。结束后GPU2恢复约295MiB基础占用，无常驻模型。
+
+新增5项同步/隔离控制单测，全套118项通过（0.315s）。此前CPU测试仍保留作为回归，但不恢复已删除的CPU测试Markdown。
+
+复验：`CUDA_VISIBLE_DEVICES=2 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 /home/ubuntu/enter/envs/nanovllm/bin/python -m qwen35_adapter.verify_gpu_engine --model-dir /home/ubuntu/huggingface/Qwen3.5-4B --output gpu_engine_results.json`。
+
+验收边界：本轮完成已测长度/固定token序列和短文本的单卡eager首版M1/M2，不是所有输入/长上下文/大并发普遍正确的证明。引擎独立复用nano Sequence、BlockManager与改造的混合Scheduler，不冒称原LLMEngine的所有优化已迁移。下一阶段是性能基线、GPU分页Attention与优化GDN，以及更广的质量回归。

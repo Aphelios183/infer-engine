@@ -156,21 +156,30 @@ def gated_delta_net(x, params, config, state=None, *, state_dtype=torch.float32)
     q,k,v = mixed.split([kd,kd,vd],-1)
     q,k = q.reshape(1,-1,nk,dk), k.reshape(1,-1,nk,dk)
     v = v.reshape(1,-1,nv,dv)
+    raw_q,raw_k=q,k
     q = q * torch.rsqrt(q.square().sum(-1,keepdim=True)+1e-6)
     k = k * torch.rsqrt(k.square().sum(-1,keepdim=True)+1e-6)
     q,k = q.repeat_interleave(nv//nk,2).float(), k.repeat_interleave(nv//nk,2).float()
     beta = project(x,params.in_proj_b).sigmoid().float()
     g = -params.A_log.float().exp() * F.softplus(project(x,params.in_proj_a).float()+params.dt_bias)
     recurrent = recurrent.float()
-    output = []
-    for i in range(x.shape[1]):
-        ki = k[:,i]
-        recurrent = recurrent * g[:,i].exp()[...,None,None]
-        predicted = (recurrent * ki[...,None]).sum(-2)
-        delta = (v[:,i].float()-predicted)*beta[:,i,...,None]
-        recurrent = recurrent + ki[...,None]*delta[...,None,:]
-        output.append((recurrent*(q[:,i]*dk**-0.5)[...,None]).sum(-2))
-    out = torch.stack(output,1).to(x.dtype)
+    if config.get('gdn_prefill_backend') == 'hf_torch_chunk' and (state is None or x.shape[1]>1):
+        # Explicit reference-kernel bridge, NOT a native optimized implementation.
+        from transformers.models.qwen3_5.modeling_qwen3_5 import torch_chunk_gated_delta_rule
+        out,recurrent=torch_chunk_gated_delta_rule(
+            raw_q.repeat_interleave(nv//nk,2),raw_k.repeat_interleave(nv//nk,2),v,
+            g=g,beta=beta,initial_state=None if state is None else state.recurrent,
+            output_final_state=True,use_qk_l2norm_in_kernel=True)
+    else:
+        output = []
+        for i in range(x.shape[1]):
+            ki = k[:,i]
+            recurrent = recurrent * g[:,i].exp()[...,None,None]
+            predicted = (recurrent * ki[...,None]).sum(-2)
+            delta = (v[:,i].float()-predicted)*beta[:,i,...,None]
+            recurrent = recurrent + ki[...,None]*delta[...,None,:]
+            output.append((recurrent*(q[:,i]*dk**-0.5)[...,None]).sum(-2))
+        out = torch.stack(output,1).to(x.dtype)
     z = project(x,params.in_proj_z).reshape_as(out)
     out = gated_rms_norm(out,params.norm.weight,z,config['rms_norm_eps'])
     out = project(out.reshape(1,x.shape[1],vd),params.out_proj)

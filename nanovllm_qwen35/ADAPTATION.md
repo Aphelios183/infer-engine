@@ -1,6 +1,6 @@
 # Qwen3.5适配副本：Lesson4起点
 
-目录：`/home/ubuntu/infer-engine/nanovllm_qwen35`。当前已完成配置契约、层映射及CPU资源管理→调度→Runner输入准备；仍明确拒绝未实现的模型执行路径，不能生成Qwen3.5文本。
+目录：`/home/ubuntu/infer-engine/nanovllm_qwen35`。当前已通过显式`nanovllm.qwen35.Qwen35LLM`入口接通单卡eager纯文本GPU生成；原`nanovllm.LLM`的Qwen3.5 guard仍保留，不能把新模型误送旧Qwen3 Runner。首版使用参考torch chunk、稠密历史gather与逐请求计算，不是高性能生产引擎。
 
 ## 来源与贡献
 
@@ -45,5 +45,7 @@ cd /home/ubuntu/infer-engine/nanovllm_qwen35
 2026-10-08 GPU诊断：第10节已在物理GPU2的L40上运行真实4B、19-token Prefill与两步Decode，逐层比较原始HF chunk参考和受控recurrent参考。原始参考logits仍有差异；recurrent消融三步全层/最终logits均为0差异。仅诊断，不是原始参考M1验收，也未接GPU调度/分页池。
 
 按用户要求移除纯CPU测试文档：本目录VERIFY.md、week4/test/README.md与RESULTS.md。备份在`/home/ubuntu/infer-engine/archive/cpu-test-docs-2026-10-08/cpu-test-docs.tar`。保留测试代码、课程和接口说明，不删除历史GPU实验报告。
+
+最新：BACKEND_AUDIT第11节记录GPU引擎接线、27个精确参考对拍步骤、资源池逐项一致与实际文本生成。运行说明同节；测试代码共118项通过。之前“不能生成”及未接GPU的段落属于阶段历史，当前只开放显式单卡eager入口，不开放旧LLM的TP/Graph等路径。
 
 文档清理（2026-10-08）：移除适配副本中的README_CN.md和REQUIREMENTS_CN.md，因旧Qwen3说明/需求易与当前适配混淆；英文来源README和SOURCE_MANIFEST保留。删除前tar备份并用tar对比确认一致，恢复来源为`/home/ubuntu/infer-engine/archive/doc-cleanup-2026-10-08/old-qwen3-docs.tar`，只含这两个文件。原始nano来源目录未改，SOURCE_MANIFEST仍表示最初复制快照，不代表当前副本文件集合。
