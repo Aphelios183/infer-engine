@@ -73,10 +73,6 @@ class PooledCPUBackend:
         batch = self._check_inputs(inputs)
         # From this point failure requires whole-batch disposal, not a retry.
         self._attempted_batch = batch
-        # Batch-local immutable metadata: upload once, share across all layers.
-        # Do not retain/reuse these buffers across batches or change stream semantics.
-        positions_gpu = inputs.positions.to(self.device)
-        slots_gpu = inputs.slot_mapping.long().to(self.device)
         x = F.embedding(inputs.input_ids.to(self.device),self.parameters.model.embed_tokens.weight)
         edges = inputs.cu_seqlens_q.tolist()
         c = self.config
@@ -86,7 +82,7 @@ class PooledCPUBackend:
                 a,b = edges[row:row+2]
                 end = inputs.context_lens[row].item()
                 past = end-(b-a)
-                positions = positions_gpu[a:b].unsqueeze(0)
+                positions = inputs.positions[a:b].unsqueeze(0).to(self.device)
                 state_slot = inputs.state_slots[row].item()
                 if self.states.lookup(request_id) != state_slot:
                     raise ValueError('state owner changed during execution')
@@ -109,7 +105,7 @@ class PooledCPUBackend:
                 out,new = decoder_layer(x[a:b].unsqueeze(0),positions,params,c,layer_id,old,
                                         state_dtype=self.states.recurrent_pool.dtype)
                 if layer_id in self.full_map:
-                    slots = slots_gpu[a:b]
+                    slots = inputs.slot_mapping[a:b].long().to(self.device)
                     # Only append current tokens. Do not rewrite historical or padding slots.
                     kpool.index_copy_(0,slots,new.key[0,:,past:,:].transpose(0,1))
                     vpool.index_copy_(0,slots,new.value[0,:,past:,:].transpose(0,1))

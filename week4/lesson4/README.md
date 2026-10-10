@@ -40,6 +40,8 @@
 
 ## 小课2：用profiler解释基线
 
+2026-10-10：独立profiling已完成，见[实测时间线解读](PROFILING_20261010.md)。已采集CPU/CUDA时间线，插桩前后输出一致；尚未实施优化，继续对照实测证据学习。
+
 目标：把结构与耗时对应，不凭GPU利用率或直觉判定瓶颈。
 
 读 `benchmark_gpu_baseline.py::run_case`、`GPUExecutionRunner.run`、`PooledCPUBackend.forward/_check_inputs`。已有单请求TPOT约38–44ms、双请求约80–86ms，总吞吐约21–24token/s；这是低负载共享卡基线，不能当独占环境结论。
@@ -49,6 +51,8 @@
 验收：拿一段trace指出证据，区分CPU提交时间、GPU kernel时间、同步等待和端到端耗时；不能把异步CPU区间直接当GPU计算时长。定位一个最值得改的目标，并给出可能推翻自己判断的证据。不将profiler耗时混入正常基线。
 
 ## 小课3：一个小优化的完整闭环
+
+2026-10-10：已完成positions/slot_mapping轮内复用及真实GPU验证，见[本次优化闭环](METADATA_REUSE_20261010.md)。单请求Decode H2D从50降至12；无profiler交错A/B吞吐中位数提高约5.3%/8.5%（B1/B2），TTFT无稳定改善。实现验证完成不等于学生独立验收通过；继续解释张量生命周期与复用边界。
 
 目标：独立解释一次改动，而不是一次性替换整个后端。
 
@@ -86,3 +90,19 @@
 门槛是独立追踪请求、完成一次有证据的优化、解释并验证混合状态续算与回收。无需先补齐多模态、FP8、TP、MTP、KV压缩。届时以资源管理、执行后端和调度边界对照InferLab，而非复制一套名词。
 
 历史清理：助手生成的 `nanovllm_qwen35/tests/` 与4份旧GPU对拍JSON归档到 `/home/ubuntu/infer-engine/archive/lesson4-structure-20261009/assistant-tests-and-results.tar` 后从活动目录移除；历史“121项通过”只代表当时运行记录，不再表示活动目录现有测试数量。保留源码、基线脚本、GPU对拍入口、用户早期课程与手写代码。
+
+## 当前学习位置与下一步（2026-10-10）
+
+小课1链路和小课2同步/搬运基础问答已完成；小课3完成助手实施的positions/slots优化及实测，学生已正确解释每请求历史地址与空历史。尚不等于学生独立实现全部路径。历史addresses轮内复用暂未实现，5/6次H2D仅为理论目标。
+
+现在进入小课4的结构准备，先掌握：
+
+1. 分页存储不等于直接分页计算：追踪block_table → addresses → index_select → 稠密历史 → attention，找到临时张量及复制。
+2. 明确高效Attention接口：Q、新K/V、KV池布局、块表、有效长度、位置与因果边界；页内偏移和层索引不要混淆。
+3. 理解缓存写入与Attention读取的先后依赖；批量请求边界、空历史及跨块读写不能改变语义。
+4. 再选一个后端作小范围集成，先对拍再测性能，不同时引入GDN、Graph和混批。
+5. 小课5再进入Chunked Prefill：中间chunk不采样，末chunk才选首token，KV和GDN状态必须对齐同一已处理边界。
+
+当前题：`kpool.index_select(0, addresses)` 返回的是原池view还是新张量？由此能否说当前Full Attention已经直接在分页KV池上计算？
+
+本次清理仅删除生成trace/summary/临时采样文件及Python字节码，保留课程关键指标、实验脚本、小型A/B与正确性JSON。无自动commit或stage。

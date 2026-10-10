@@ -1,0 +1,270 @@
+{
+  "device": "NVIDIA L40",
+  "reference": "original HF torch chunk, eager, same checkpoint dtype",
+  "records": [
+    {
+      "lengths": [
+        1
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        1
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        1
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        3
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        3
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        3
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        19
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        19
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        19
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        63
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        63
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        63
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        64
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        64
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        64
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        65
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        65
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        65
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        128
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        128
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        128
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        257
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        257
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        257
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        63,
+        65
+      ],
+      "step": 0,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        63,
+        65
+      ],
+      "step": 1,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    },
+    {
+      "lengths": [
+        63,
+        65
+      ],
+      "step": 2,
+      "max_abs": 0.0,
+      "tokens_equal": true
+    }
+  ],
+  "exact_pool_state_comparisons": true,
+  "forced_eos_pass": true,
+  "zero_budget_pass": true,
+  "host_failure_recovery_pass": true,
+  "text_generation": [
+    {
+      "token_ids": [
+        79852,
+        220,
+        111734,
+        96580,
+        99580,
+        103725,
+        132421,
+        96671,
+        129933,
+        95865,
+        118640,
+        97295,
+        96326,
+        95895,
+        3709,
+        97909,
+        95772,
+        103910,
+        95882,
+        3817,
+        220,
+        95865,
+        108695,
+        97792,
+        96221,
+        96961,
+        100658,
+        99486,
+        3709,
+        99131,
+        100120,
+        98846
+      ],
+      "text": "KV 缓存通过存储模型在处理历史上下文时生成的键值对，避免在生成新 token 时重复计算已处理过的输入，从而显著降低",
+      "stop_reason": "length"
+    }
+  ],
+  "peak_allocated_bytes": 8743364096
+}

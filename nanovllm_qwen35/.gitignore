@@ -3,3 +3,8 @@
 !nanovllm/models/**
 __pycache__/
 *.pyc
+
+# Generated profiling artifacts (keep source and small A/B evidence)
+/profiling_*/
+/*.trace.json
+/*.gpu.csv

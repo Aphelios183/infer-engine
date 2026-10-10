@@ -24,3 +24,6 @@ results/
 
 # 隔离开发工作区
 .worktrees/
+
+# 原始 profiler trace（体积大，仅保留本地）
+profiling_*/
