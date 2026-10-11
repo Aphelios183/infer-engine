@@ -48,8 +48,8 @@ def run_case(engine, prompts, new_tokens, torch, SamplingParams):
         if result is None:
             raise RuntimeError('No progress while requests remain')
         step_ms.append({'is_prefill': result.is_prefill, 'ms': (now - before) * 1000})
-        for request_id in result.request_ids:
-            emissions[request_id].append(now)
+        for row in result.sample_rows:
+            emissions[result.request_ids[row]].append(now)
     end = time.perf_counter()
     torch.cuda.synchronize()
     per_request = []

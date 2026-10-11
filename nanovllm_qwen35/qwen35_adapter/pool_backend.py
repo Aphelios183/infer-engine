@@ -79,6 +79,18 @@ class PooledCPUBackend:
         slots_gpu = inputs.slot_mapping.long().to(self.device)
         x = F.embedding(inputs.input_ids.to(self.device),self.parameters.model.embed_tokens.weight)
         edges = inputs.cu_seqlens_q.tolist()
+        # Request-local logical-to-physical history addresses do not depend on layer.
+        # Rebuild every forward: row order, prefix length and block ownership may change.
+        history_addresses = []
+        for row, (a, b) in enumerate(zip(edges, edges[1:])):
+            past = inputs.context_lens[row].item() - (b - a)
+            if past and self.full_map:
+                logical = torch.arange(past, dtype=torch.int64)
+                addresses = (inputs.block_tables[row, logical // self.block_size].long()
+                             * self.block_size + logical % self.block_size)
+                history_addresses.append(addresses.to(self.device))
+            else:
+                history_addresses.append(None)  # no historical KV to gather
         c = self.config
         for layer_id, params in enumerate(self.parameters.model.layers):
             pieces = []
@@ -95,9 +107,7 @@ class PooledCPUBackend:
                     # Flatten physical blocks; logical order comes ONLY from block_table.
                     kpool = self.kv_pool[0,idx].view(-1,c['num_key_value_heads'],c['head_dim'])
                     vpool = self.kv_pool[1,idx].view_as(kpool)
-                    logical = torch.arange(past,dtype=torch.int64)
-                    addresses = inputs.block_tables[row,logical//self.block_size].long()*self.block_size + logical%self.block_size
-                    addresses=addresses.to(self.device)
+                    addresses = history_addresses[row]
                     old = None if past==0 else FullState(
                         kpool.index_select(0,addresses).transpose(0,1).unsqueeze(0),
                         vpool.index_select(0,addresses).transpose(0,1).unsqueeze(0))

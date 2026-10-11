@@ -1,7 +1,7 @@
 """Single-device eager Qwen3.5 text engine using nano request/resource classes.
 
 Explicit adapter entry, not a replacement for upstream Qwen3 LLMEngine.
-No TP/Graph/prefix/preemption/chunk scheduling. Serial owner-thread only.
+Optional homogeneous chunked prefill; no TP/Graph/prefix/preemption. Serial owner-thread only.
 """
 import math
 import torch
@@ -76,17 +76,21 @@ class GPUExecutionRunner:
         inputs=self.builder.prepare(batch)
         try:
             hidden=self.backend.forward(inputs)
-            logits=self.backend.compute_logits(hidden.index_select(0,inputs.last_indices.to(hidden.device)))
-            if logits.ndim!=2 or logits.shape[0]!=len(batch.sequences) or not torch.isfinite(logits).all():
-                raise ValueError('invalid logits')
-            if self.greedy:
-                ids=logits.argmax(-1)
-            else:
-                temps=torch.tensor([s.temperature for s in batch.sequences],device=logits.device)
-                probs=(logits.float()/temps[:,None]).softmax(-1)
-                ids=torch.multinomial(probs,1).squeeze(-1)
-            if self.capture_logits: self.last_logits=logits.detach().cpu()
-            tokens=tuple(ids.tolist())
+            tokens=()
+            self.last_logits=None
+            if inputs.sample_rows:
+                logits=self.backend.compute_logits(hidden.index_select(0,inputs.last_indices.to(hidden.device)))
+                if logits.ndim!=2 or logits.shape[0]!=len(inputs.sample_rows) or not torch.isfinite(logits).all():
+                    raise ValueError('invalid logits')
+                if self.greedy:
+                    ids=logits.argmax(-1)
+                else:
+                    temps=torch.tensor([batch.sequences[i].temperature for i in inputs.sample_rows],device=logits.device)
+                    probs=(logits.float()/temps[:,None]).softmax(-1)
+                    ids=torch.multinomial(probs,1).squeeze(-1)
+                if self.capture_logits: self.last_logits=logits.detach().cpu()
+                tokens=tuple(ids.tolist())
+            # Required even when no sampling / .tolist() occurred.
             self.scheduler.admission.states.synchronize()
         except BaseException as exc:
             try: self.scheduler.admission.states.synchronize()
@@ -96,15 +100,26 @@ class GPUExecutionRunner:
             self.scheduler.fail_batch(batch,str(exc),execution_complete=True)
             raise
         self.scheduler.postprocess(batch,tokens)
-        return StepResult(inputs.request_ids,tokens,batch.input_counts,batch.is_prefill)
+        return StepResult(inputs.request_ids,tokens,batch.input_counts,batch.is_prefill,inputs.sample_rows)
 
 
 class Qwen35Engine:
+    """Opt-in prefill_chunk_size caps tokens per request per prefill step.
+
+    max_num_batched_tokens caps the whole step. Default None preserves full
+    prefill. Chunked BF16 math matches the segmented reference, but is NOT
+    bitwise equivalent to full prefill; generation may depend on segmentation.
+    """
     def __init__(self,model_dir,*,device='cuda:0',max_model_len=512,max_num_seqs=2,
-                 block_size=256,greedy=True):
+                 block_size=256,greedy=True,prefill_chunk_size=None,max_num_batched_tokens=None):
         if torch.device(device).type!='cuda': raise ValueError('single CUDA device required')
         if any(type(v) is not int or v<=0 for v in (max_model_len,max_num_seqs,block_size)):
             raise ValueError('capacities must be positive integers')
+        if prefill_chunk_size is not None and (type(prefill_chunk_size) is not int or prefill_chunk_size<=0):
+            raise ValueError('prefill_chunk_size must be positive or None')
+        budget=max_model_len*max_num_seqs if max_num_batched_tokens is None else max_num_batched_tokens
+        if type(budget) is not int or not 0<budget<=max_model_len*max_num_seqs:
+            raise ValueError('invalid max_num_batched_tokens')
         self.device=torch.device(device)
         torch.cuda.set_device(self.device)
         self.max_model_len=max_model_len; self.block_size=block_size
@@ -126,7 +141,8 @@ class Qwen35Engine:
         if self.tokenizer.eos_token_id is not None:eos.add(self.tokenizer.eos_token_id)
         self.scheduler=HybridScheduler(AdmissionController(BlockManager(blocks,block_size),self.states,
                                        max_prefill_tokens=max_model_len*max_num_seqs),
-                                       max_num_seqs=max_num_seqs,token_budget=max_model_len*max_num_seqs,eos_ids=eos)
+                                       max_num_seqs=max_num_seqs,token_budget=budget,eos_ids=eos,
+                                       prefill_chunk_size=prefill_chunk_size)
         self.backend=PooledGPUBackend(self.scheduler,self.parameters,self.kv_pool)
         self.runner=GPUExecutionRunner(self.scheduler,self.backend,greedy=greedy)
         self.states.synchronize()

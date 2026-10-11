@@ -40,6 +40,7 @@ class StepResult:
     token_ids: tuple
     input_counts: tuple
     is_prefill: bool
+    sample_rows: tuple = ()  # token_ids map to these rows of request_ids
 
 
 class CPUExecutionRunner:
@@ -71,25 +72,27 @@ class CPUExecutionRunner:
     @torch.inference_mode()
     def run(self, batch):
         inputs = self.builder.prepare(batch)  # outside cleanup: no execution yet
-        temperatures = tuple(seq.temperature for seq in batch.sequences)
+        temperatures = tuple(batch.sequences[i].temperature for i in inputs.sample_rows)
         try:
             hidden = self.backend.forward(inputs)
             self._matrix(hidden, inputs.input_ids.numel(), 'hidden')
-            last_hidden = hidden.index_select(0, inputs.last_indices)
-            logits = self.backend.compute_logits(last_hidden)
-            n = len(inputs.request_ids)
-            self._matrix(logits, n, 'logits')
-            ids = self.sampler.sample(logits, temperatures)
-            if (not isinstance(ids, torch.Tensor) or ids.device.type != 'cpu'
-                    or ids.dtype != torch.int64 or ids.shape != (n,)):
-                raise ValueError('sampler must return CPU int64 [requests]')
-            if ((ids < 0) | (ids >= logits.shape[1])).any().item():
-                raise ValueError('sampled token outside vocabulary')
-            token_ids = tuple(ids.tolist())
+            token_ids = ()
+            if inputs.sample_rows:
+                last_hidden = hidden.index_select(0, inputs.last_indices)
+                logits = self.backend.compute_logits(last_hidden)
+                n = len(inputs.sample_rows)
+                self._matrix(logits, n, 'logits')
+                ids = self.sampler.sample(logits, temperatures)
+                if (not isinstance(ids, torch.Tensor) or ids.device.type != 'cpu'
+                        or ids.dtype != torch.int64 or ids.shape != (n,)):
+                    raise ValueError('sampler must return CPU int64 [sample rows]')
+                if ((ids < 0) | (ids >= logits.shape[1])).any().item():
+                    raise ValueError('sampled token outside vocabulary')
+                token_ids = tuple(ids.tolist())
         except BaseException as exc:
             # Safe ONLY under the documented synchronous CPU contract.
             self.scheduler.fail_batch(batch, f'execution: {exc}', execution_complete=True)
             raise
         # Settlement errors are not execution errors: never attempt a second release.
         self.scheduler.postprocess(batch, token_ids)
-        return StepResult(inputs.request_ids, token_ids, batch.input_counts, batch.is_prefill)
+        return StepResult(inputs.request_ids, token_ids, batch.input_counts, batch.is_prefill, inputs.sample_rows)

@@ -1,7 +1,7 @@
 """Synchronous CPU joint admission over the real nano BlockManager.
 
-Used by the CPU HybridScheduler, not the GPU engine. No prefix reuse, chunking,
-preemption, GPU execution or concurrent mutations are supported here.
+Used by HybridScheduler on CPU and GPU routes. Reserves full prompt capacity even
+when scheduling only a chunk. No prefix reuse, preemption or concurrent mutation.
 """
 
 from nanovllm.engine.sequence import SequenceStatus
@@ -43,7 +43,7 @@ class AdmissionController:
         seq.num_cached_tokens = cached
         seq.num_scheduled_tokens = scheduled
 
-    def try_admit(self, seq, *, token_budget=None):
+    def try_admit(self, seq, *, token_budget=None, scheduled_tokens=None):
         """Return state slot (0 valid), None for temporary backpressure.
 
         A successful admission reserves resources only: no queue transition,
@@ -54,23 +54,26 @@ class AdmissionController:
         if (seq.status != SequenceStatus.WAITING or seq.block_table
                 or seq.num_cached_tokens or seq.num_scheduled_tokens
                 or seq.num_tokens != seq.num_prompt_tokens or not seq.is_prefill):
-            raise ValueError('only fresh requests are supported; no resume/prefix/chunk')
+            raise ValueError('only fresh requests may acquire resources; no resume/prefix reuse')
         if seq.block_size != self.blocks.block_size:
             raise ValueError('Sequence and BlockManager block_size mismatch')
         if seq.num_tokens <= 0 or seq.num_tokens > self.max_prefill_tokens:
-            raise ValueError('prompt cannot fit full-prefill budget; chunking disabled')
+            raise ValueError('prompt exceeds configured admission capacity')
         if seq.num_blocks > len(self.blocks.blocks):
             raise ValueError('prompt exceeds total KV capacity')
         budget = self.max_prefill_tokens if token_budget is None else token_budget
         if type(budget) is not int or not 0 <= budget <= self.max_prefill_tokens:
             raise ValueError('invalid remaining token budget')
-        if seq.num_tokens > budget or seq.num_blocks > len(self.blocks.free_block_ids):
+        count = seq.num_tokens if scheduled_tokens is None else scheduled_tokens
+        if type(count) is not int or not 0 < count <= seq.num_prompt_tokens:
+            raise ValueError('invalid first-chunk token count')
+        if count > budget or seq.num_blocks > len(self.blocks.free_block_ids):
             return None
 
         snapshot = self._snapshot(seq)
         try:
             # Never call prefix-aware can_allocate and never accept its cached count.
-            self.blocks.allocate(seq, num_cached_blocks=0)
+            self.blocks.allocate(seq, num_cached_blocks=0)  # reserve entire prompt, not just its first chunk
             slot = self.states.allocate(seq.seq_id)
         except BaseException:
             self._restore(seq, snapshot)

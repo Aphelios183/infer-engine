@@ -18,11 +18,14 @@ def annotate_runner(module, record_function):
     tree = ast.parse(textwrap.dedent(inspect.getsource(original)))
     function = tree.body[0]
     execution_try = next(node for node in function.body if isinstance(node, ast.Try))
-    body = execution_try.body
+    # Sampling is conditional in chunked prefill; leave forward outside this range.
+    sample_branch = next(node for node in execution_try.body
+                         if isinstance(node, ast.If) and ast.unparse(node.test) == 'inputs.sample_rows')
+    body = sample_branch.body
     # Refuse unknown source instead of silently profiling incorrect stage boundaries.
     begin = next(i for i, node in enumerate(body)
                  if isinstance(node, ast.If) and 'logits.ndim' in ast.unparse(node.test))
-    assert ast.unparse(body[-1]).endswith('states.synchronize()')
+    assert ast.unparse(execution_try.body[-1]).endswith('states.synchronize()')
     def region(label, statements):
         return ast.With(items=[ast.withitem(context_expr=ast.Call(
             func=ast.Name(id='record_function', ctx=ast.Load()),
@@ -33,7 +36,8 @@ def annotate_runner(module, record_function):
             assert 'ids.tolist()' in ast.unparse(node)
             node = region('sampling/token_ids_to_host', [node])
         sampling.append(node)
-    execution_try.body = body[:begin] + [region('sampling_sync', sampling)]
+    sample_branch.body = body[:begin] + [region('sampling_sync', sampling)]
+    execution_try.body[-1] = region('sampling_sync', [execution_try.body[-1]])
     ast.fix_missing_locations(tree)
     namespace = dict(vars(module), record_function=record_function)
     exec(compile(tree, '<profiling-only-runner>', 'exec'), namespace)

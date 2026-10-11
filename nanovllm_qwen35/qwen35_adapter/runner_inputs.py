@@ -26,6 +26,7 @@ class RunnerInputs:
     last_indices: torch.Tensor
     max_seqlen_q: int
     max_seqlen_k: int
+    sample_rows: tuple = ()
 
 
 class RunnerInputBuilder:
@@ -51,7 +52,8 @@ class RunnerInputBuilder:
         q_edges, k_edges, last = [0], [0], []
         request_ids, state_slots = [], []
         seen_blocks, seen_requests = set(), set()
-        for seq, count, slot in zip(batch.sequences, batch.input_counts, batch.state_slots):
+        sample_rows = []
+        for row, (seq, count, slot) in enumerate(zip(batch.sequences, batch.input_counts, batch.state_slots)):
             if seq.seq_id in seen_requests or admission._admitted.get(seq.seq_id) is not seq:
                 raise ValueError('duplicate or unowned request')
             seen_requests.add(seq.seq_id)
@@ -64,16 +66,16 @@ class RunnerInputBuilder:
             if type(count) is not int or count <= 0 or seq.num_scheduled_tokens != count:
                 raise ValueError('invalid scheduled count')
             start, end = seq.num_cached_tokens, seq.num_cached_tokens + count
-            if seq.num_tokens != len(seq.token_ids) or end != seq.num_tokens:
+            if seq.num_tokens != len(seq.token_ids) or not 0 <= start < end <= seq.num_tokens:
                 raise ValueError('input range does not match sequence length')
             if batch.is_prefill:
-                if start != 0 or seq.num_tokens != seq.num_prompt_tokens or not seq.is_prefill:
-                    raise ValueError('only fresh full prefill is supported')
+                if seq.num_tokens != seq.num_prompt_tokens or end > seq.num_prompt_tokens or not seq.is_prefill:
+                    raise ValueError('prefill must be an ungenerated prompt slice')
             elif count != 1 or start != seq.num_tokens - 1 or seq.is_prefill:
                 raise ValueError('decode must process exactly one new token')
             if seq.last_token != seq.token_ids[-1]:
                 raise ValueError('last_token disagrees with token_ids')
-            required = (end + bm.block_size - 1) // bm.block_size
+            required = (seq.num_tokens + bm.block_size - 1) // bm.block_size  # prompt is fully reserved
             if len(seq.block_table) != required:
                 raise ValueError('missing or unexpected KV block capacity')
             for block_id in seq.block_table:
@@ -94,11 +96,15 @@ class RunnerInputBuilder:
             lengths.append(end)
             q_edges.append(q_edges[-1] + count)
             k_edges.append(k_edges[-1] + end)
-            last.append(q_edges[-1] - 1)
+            if not batch.is_prefill or end == seq.num_prompt_tokens:
+                last.append(q_edges[-1] - 1)
+                sample_rows.append(row)
             request_ids.append(seq.seq_id)
             state_slots.append(slot)
         if len(set(state_slots)) != n:
             raise ValueError('state slots must be unique for distinct requests')
+        if tuple(sample_rows) != batch.sample_rows:
+            raise ValueError('sample rows disagree with prompt completion boundaries')
         width = max(map(len, tables))
         padded_tables = [row + [-1] * (width - len(row)) for row in tables]
         def tensor(data, dtype=torch.int32):
@@ -108,4 +114,4 @@ class RunnerInputBuilder:
             tensor(ids, torch.int64), tensor(positions, torch.int64),
             tensor(q_edges), tensor(k_edges), tensor(lengths), tensor(slots),
             tensor(padded_tables), tensor(state_slots), tensor(last, torch.int64),
-            max(batch.input_counts), max(lengths))
+            max(batch.input_counts), max(lengths), tuple(sample_rows))

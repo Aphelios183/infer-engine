@@ -1,5 +1,7 @@
 # Qwen3.5适配副本：Lesson4起点
 
+2026-10-11更新：显式Qwen35LLM新增 `prefill_chunk_size`（默认None）与 `max_num_batched_tokens`。支持不混批的分块Prefill、部分/零采样行与状态续算；默认整段路线不变。用法与数值限制见[Chunked Prefill课程记录](../week4/lesson4/CHUNKED_PREFILL.md)。同分块HF精确验证通过，但整段/分块质量等价尚未建立，不宣称无损或性能收益。此前“不支持chunk”的段落是历史进度。
+
 目录：`/home/ubuntu/infer-engine/nanovllm_qwen35`。当前已通过显式`nanovllm.qwen35.Qwen35LLM`入口接通单卡eager纯文本GPU生成；原`nanovllm.LLM`的Qwen3.5 guard仍保留，不能把新模型误送旧Qwen3 Runner。首版使用参考torch chunk、稠密历史gather与逐请求计算，不是高性能生产引擎。
 
 ## 来源与贡献

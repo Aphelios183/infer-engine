@@ -1,6 +1,6 @@
 """CPU synchronous hybrid scheduling over real nano Sequence/resource managers.
 
-No model execution, GPU safety, preemption, prefix reuse or chunked prefill.
+Homogeneous prefill/decode batches, optional chunking. No preemption or prefix reuse.
 One outstanding batch; callers must settle or explicitly fail it before scheduling.
 """
 
@@ -20,6 +20,7 @@ class ScheduledBatch:#已调度batch
     is_prefill: bool
     state_slots: tuple
     input_counts: tuple
+    sample_rows: tuple = ()  # indices into sequences, NOT packed token indices
 
     @property
     def total_tokens(self):
@@ -36,7 +37,7 @@ class Completion:#请求完成时的结果
 
 
 class HybridScheduler:
-    def __init__(self, admission, *, max_num_seqs, token_budget, eos_ids):
+    def __init__(self, admission, *, max_num_seqs, token_budget, eos_ids, prefill_chunk_size=None):
         if type(max_num_seqs) is not int or max_num_seqs <= 0:
             raise ValueError('max_num_seqs must be positive')
         if type(token_budget) is not int or not 0 < token_budget <= admission.max_prefill_tokens:
@@ -44,6 +45,9 @@ class HybridScheduler:
         self.admission = admission
         self.max_num_seqs = max_num_seqs  # cap both active requests and each batch
         self.token_budget = token_budget
+        if prefill_chunk_size is not None and (type(prefill_chunk_size) is not int or prefill_chunk_size <= 0):
+            raise ValueError('prefill_chunk_size must be a positive integer or None')
+        self.prefill_chunk_size = prefill_chunk_size
         self.eos_ids = frozenset(eos_ids)
         self.waiting = deque()
         self.running = deque()
@@ -62,9 +66,10 @@ class HybridScheduler:
             raise ValueError('max_tokens must be a nonnegative integer')
         if seq.block_size != self.admission.blocks.block_size:
             raise ValueError('block size mismatch')
-        if seq.max_tokens and (seq.num_tokens > self.token_budget
+        if seq.max_tokens and (seq.num_tokens > self.admission.max_prefill_tokens
+                              or (self.prefill_chunk_size is None and seq.num_tokens > self.token_budget)
                               or seq.num_blocks > len(self.admission.blocks.blocks)):
-            raise ValueError('prompt cannot fit: chunking/preemption disabled')
+            raise ValueError('prompt exceeds configured capacity or unchunked token budget')
         self._known_ids.add(seq.seq_id)
         self.waiting.append(seq)
         if seq.max_tokens == 0:
@@ -82,13 +87,15 @@ class HybridScheduler:
         self.completed[seq.seq_id] = Completion(
             seq.seq_id, reason, tuple(seq.token_ids), processed, error)
 
-    def _make_batch(self, selected, is_prefill):
-        counts = tuple(s.num_tokens if is_prefill else 1 for s in selected)
+    def _make_batch(self, selected, is_prefill, counts=None):
+        counts = tuple(counts) if counts is not None else tuple(1 for _ in selected)
         slots = tuple(self.admission.states.lookup(s.seq_id) for s in selected)
+        sample_rows = tuple(i for i, (s, count) in enumerate(zip(selected, counts))
+                            if not is_prefill or s.num_cached_tokens + count == s.num_prompt_tokens)
         for seq, count in zip(selected, counts):
             seq.num_scheduled_tokens = count
             seq.is_prefill = is_prefill
-        self._pending = ScheduledBatch(tuple(selected), is_prefill, slots, counts)
+        self._pending = ScheduledBatch(tuple(selected), is_prefill, slots, counts, sample_rows)
         return self._pending
 
     def schedule(self):
@@ -97,6 +104,8 @@ class HybridScheduler:
         # Homogeneous batches: prioritize existing decode; rotate selected requests.
         selected = []
         for seq in tuple(self.running):
+            if seq.num_cached_tokens < seq.num_prompt_tokens:
+                continue  # partial prefill is never placed in a decode batch
             if len(selected) >= min(self.max_num_seqs, self.token_budget):
                 break
             try:
@@ -114,11 +123,34 @@ class HybridScheduler:
             return self._make_batch(selected, False)
 
         budget = self.token_budget
-        for seq in tuple(self.waiting):
-            if len(self.running) >= self.max_num_seqs:
+        counts = []
+        def next_count(seq):
+            remaining = seq.num_prompt_tokens - seq.num_cached_tokens
+            if self.prefill_chunk_size is None:
+                return remaining if remaining <= budget else 0
+            return min(remaining, self.prefill_chunk_size, budget)
+
+        # Continue admitted partial prefills without allocating/resetting their state.
+        for seq in tuple(self.running):
+            if not budget or len(selected) >= self.max_num_seqs:
                 break
+            if seq.num_cached_tokens >= seq.num_prompt_tokens:
+                continue
+            count = next_count(seq)
+            if count:
+                selected.append(seq)
+                counts.append(count)
+                budget -= count
+                self.running.remove(seq)
+                self.running.append(seq)
+        for seq in tuple(self.waiting):
+            if not budget or len(self.running) >= self.max_num_seqs or len(selected) >= self.max_num_seqs:
+                break
+            count = next_count(seq)
+            if not count:
+                continue
             try:
-                slot = self.admission.try_admit(seq, token_budget=budget)
+                slot = self.admission.try_admit(seq, token_budget=budget, scheduled_tokens=count)
             except Exception as exc:
                 self._finish(seq, 'failed', f'admission: {exc}')
                 continue
@@ -128,11 +160,12 @@ class HybridScheduler:
             self.running.append(seq)
             seq.status = SequenceStatus.RUNNING  # scheduled, not executed yet
             selected.append(seq)
-            budget -= seq.num_tokens
+            counts.append(count)
+            budget -= count
             if budget == 0:
                 break
         if selected:
-            return self._make_batch(selected, True)
+            return self._make_batch(selected, True, counts)
         if self.waiting or self.running:
             raise NoProgressError(
                 'no runnable request; no preemption implemented; resources retained, '
@@ -144,19 +177,27 @@ class HybridScheduler:
             raise ValueError('stale or foreign batch')
 
     def postprocess(self, batch, token_ids):
-        """Call only after synchronous forward AND sampling completed successfully."""
+        """Commit every input count; append only explicitly mapped sampled tokens."""
         self._check_batch(batch)
         try:
             tokens = tuple(token_ids)
-            if len(tokens) != len(batch.sequences) or any(type(t) is not int or t < 0 for t in tokens):
-                raise ValueError('exactly one nonnegative integer token per request required')
+            expected_rows = tuple(i for i, (s,c) in enumerate(zip(batch.sequences,batch.input_counts))
+                                  if not batch.is_prefill or s.num_cached_tokens+c == s.num_prompt_tokens)
+            if (batch.sample_rows != expected_rows or len(tokens) != len(batch.sample_rows)
+                    or any(type(t) is not int or t < 0 for t in tokens)):
+                raise ValueError('exactly one nonnegative token per sample row required')
         except Exception:
             # Model states may already have changed; never retry this batch on dirty state.
             self.fail_batch(batch, 'invalid model output', execution_complete=True)
             raise
-        for seq, token, count in zip(batch.sequences, tokens, batch.input_counts):
+        sampled = dict(zip(batch.sample_rows, tokens))
+        for row, (seq, count) in enumerate(zip(batch.sequences, batch.input_counts)):
             seq.num_cached_tokens += count
             seq.num_scheduled_tokens = 0
+            if row not in sampled:
+                continue
+            token = sampled[row]
+            seq.is_prefill = False
             seq.append_token(token)
             if not seq.ignore_eos and token in self.eos_ids:
                 self._finish(seq, 'eos')
