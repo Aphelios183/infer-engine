@@ -121,10 +121,12 @@ class Qwen35Engine:
         if torch.device(device).type!='cuda': raise ValueError('single CUDA device required')
         if any(type(v) is not int or v<=0 for v in (max_model_len,max_num_seqs,block_size)):
             raise ValueError('capacities must be positive integers')
-        if decode_backend not in ('dense','flash_paged'):
+        if decode_backend not in ('dense','flash_paged','triton_paged'):
             raise ValueError('unknown decode backend')
         if lm_head_mode not in ('row','batch'):
             raise ValueError('lm_head_mode must be row or batch')
+        if decode_backend == 'triton_paged':
+            from .triton_paged import paged_decode_trusted  # fail before allocation
         if decode_backend == 'flash_paged':
             if block_size % 256:
                 raise ValueError('flash_paged requires block_size divisible by 256')

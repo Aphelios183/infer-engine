@@ -71,8 +71,10 @@ class PooledCPUBackend:
     @torch.inference_mode()
     def forward(self, inputs):
         batch = self._check_inputs(inputs)
-        use_paged = getattr(self,'decode_backend','dense') == 'flash_paged' and not inputs.is_prefill
-        if use_paged and (self.device.type != 'cuda' or self.block_size % 256
+        decode_backend = getattr(self,'decode_backend','dense')
+        use_paged = decode_backend in ('flash_paged','triton_paged') and not inputs.is_prefill
+        if use_paged and (self.device.type != 'cuda'
+                          or (decode_backend == 'flash_paged' and self.block_size % 256)
                           or any(n != 1 for n in batch.input_counts)):
             raise ValueError('flash_paged requires CUDA single-token decode and page size divisible by 256')
         # From this point failure requires whole-batch disposal, not a retry.
@@ -121,7 +123,7 @@ class PooledCPUBackend:
                     if use_paged:
                         paged = PagedDecode(self.kv_pool[0,idx],self.kv_pool[1,idx],
                                             slots_gpu[a:b],tables_gpu[row:row+1],
-                                            lengths_gpu[row:row+1],past)
+                                            lengths_gpu[row:row+1],past,decode_backend)
                 else:
                     idx = self.linear_map[layer_id]
                     old = None if past==0 else GDNState(

@@ -77,6 +77,7 @@ class PagedDecode:
     block_table: torch.Tensor
     context_lens: torch.Tensor
     past: int
+    backend: str = 'flash_paged'
 
 
 @dataclass(frozen=True)
@@ -107,7 +108,10 @@ def full_attention(x, positions, params, config, state=None, *, paged=None):
     if paged is not None:
         if state is not None or x.shape[1] != 1 or x.device.type != 'cuda':
             raise ValueError('paged path requires CUDA single-token decode without dense state')
-        if paged.key.shape != paged.value.shape or paged.key.ndim != 4 or paged.key.shape[1] % 256:
+        if paged.backend not in ('flash_paged','triton_paged'):
+            raise ValueError('unknown paged backend')
+        if (paged.key.shape != paged.value.shape or paged.key.ndim != 4
+                or (paged.backend == 'flash_paged' and paged.key.shape[1] % 256)):
             raise ValueError('paged cache requires matching 4D pools and 256-aligned pages')
     expected_pos = torch.arange(past, past+x.shape[1], dtype=torch.int64, device=x.device).unsqueeze(0)
     if positions.device != x.device or positions.dtype != torch.int64 or not torch.equal(positions, expected_pos):
@@ -123,14 +127,19 @@ def full_attention(x, positions, params, config, state=None, *, paged=None):
     q, k = partial_rope(q,k,positions,theta=rope['rope_theta'],
                         rotary_dim=int(d*rope.get('partial_rotary_factor',1.0)))
     if paged is not None:
-        from flash_attn import flash_attn_with_kvcache
         # Append on the current stream BEFORE attention reads the pool. No host barrier.
         paged.key.view(-1,kvh,d).index_copy_(0,paged.slots,k[0].transpose(0,1))
         paged.value.view(-1,kvh,d).index_copy_(0,paged.slots,v[0].transpose(0,1))
-        out = flash_attn_with_kvcache(
-            q.transpose(1,2).contiguous(),paged.key,paged.value,
-            cache_seqlens=paged.context_lens,block_table=paged.block_table,
-            softmax_scale=d**-0.5,causal=True)
+        if paged.backend == 'triton_paged':
+            from .triton_paged import paged_decode_trusted
+            out = paged_decode_trusted(q[:,:,0,:].contiguous(),paged.key,paged.value,
+                                       paged.block_table,paged.context_lens)
+        else:
+            from flash_attn import flash_attn_with_kvcache
+            out = flash_attn_with_kvcache(
+                q.transpose(1,2).contiguous(),paged.key,paged.value,
+                cache_seqlens=paged.context_lens,block_table=paged.block_table,
+                softmax_scale=d**-0.5,causal=True)
         out = out.reshape(1,1,h*d) * gate.reshape(1,1,h*d).sigmoid()
         return project(out,params.o_proj), None  # pool already updated; no second write
     if state is not None:
