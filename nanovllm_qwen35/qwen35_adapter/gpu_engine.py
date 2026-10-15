@@ -54,6 +54,11 @@ class PooledGPUBackend(PooledCPUBackend):
 
     @torch.inference_mode()
     def compute_logits(self,last_hidden):
+        mode=getattr(self,'lm_head_mode','row')
+        if mode == 'batch':
+            return super().compute_logits(last_hidden)
+        if mode != 'row':
+            raise ValueError('unknown LM Head mode')
         # Correctness-first reference route: preserve per-request GEMM shape.
         # Batched BF16 LM-head GEMM can choose a different numeric algorithm.
         return torch.cat([super(PooledGPUBackend,self).compute_logits(row[None])
@@ -70,7 +75,7 @@ class GPUExecutionRunner:
         self.capture_logits=False
 
     @torch.inference_mode()
-    def run(self,batch):
+    def run(self,batch):#只有需要采样的请求才计算 logits 和采样。
         if self.poisoned or self.scheduler.admission.states.poisoned:
             raise RuntimeError('execution is poisoned; cannot run or recycle')
         inputs=self.builder.prepare(batch)
@@ -111,10 +116,19 @@ class Qwen35Engine:
     bitwise equivalent to full prefill; generation may depend on segmentation.
     """
     def __init__(self,model_dir,*,device='cuda:0',max_model_len=512,max_num_seqs=2,
-                 block_size=256,greedy=True,prefill_chunk_size=None,max_num_batched_tokens=None):
+                 block_size=256,greedy=True,prefill_chunk_size=None,max_num_batched_tokens=None,
+                 decode_backend='dense',lm_head_mode='row'):
         if torch.device(device).type!='cuda': raise ValueError('single CUDA device required')
         if any(type(v) is not int or v<=0 for v in (max_model_len,max_num_seqs,block_size)):
             raise ValueError('capacities must be positive integers')
+        if decode_backend not in ('dense','flash_paged'):
+            raise ValueError('unknown decode backend')
+        if lm_head_mode not in ('row','batch'):
+            raise ValueError('lm_head_mode must be row or batch')
+        if decode_backend == 'flash_paged':
+            if block_size % 256:
+                raise ValueError('flash_paged requires block_size divisible by 256')
+            from flash_attn import flash_attn_with_kvcache  # fail before model allocation
         if prefill_chunk_size is not None and (type(prefill_chunk_size) is not int or prefill_chunk_size<=0):
             raise ValueError('prefill_chunk_size must be positive or None')
         budget=max_model_len*max_num_seqs if max_num_batched_tokens is None else max_num_batched_tokens
@@ -129,6 +143,9 @@ class Qwen35Engine:
         self.parameters.config['text_config']['gdn_prefill_backend']='hf_torch_chunk'
         c=self.parameters.config['text_config']; contract=parse_text_contract(self.parameters.config)
         dtype=self.parameters.model.embed_tokens.weight.dtype
+        if decode_backend == 'flash_paged' and (dtype not in (torch.float16,torch.bfloat16)
+                                               or c['head_dim'] > 256):
+            raise ValueError('unsupported FlashAttention dtype/head dimension')
         capacity=max_num_seqs
         self.states=GPUStateManager(
             torch.zeros(len(contract['linear_layer_to_state']),capacity,*contract['conv_shape_per_layer_per_request'],device=self.device,dtype=dtype),
@@ -144,6 +161,8 @@ class Qwen35Engine:
                                        max_num_seqs=max_num_seqs,token_budget=budget,eos_ids=eos,
                                        prefill_chunk_size=prefill_chunk_size)
         self.backend=PooledGPUBackend(self.scheduler,self.parameters,self.kv_pool)
+        self.backend.decode_backend=decode_backend
+        self.backend.lm_head_mode=lm_head_mode
         self.runner=GPUExecutionRunner(self.scheduler,self.backend,greedy=greedy)
         self.states.synchronize()
 

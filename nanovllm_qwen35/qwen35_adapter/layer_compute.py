@@ -69,6 +69,17 @@ class FullState:
 
 
 @dataclass(frozen=True)
+class PagedDecode:
+    """Trusted runner metadata for one request; length includes the new token."""
+    key: torch.Tensor
+    value: torch.Tensor
+    slots: torch.Tensor
+    block_table: torch.Tensor
+    context_lens: torch.Tensor
+    past: int
+
+
+@dataclass(frozen=True)
 class GDNState:
     conv: torch.Tensor
     recurrent: torch.Tensor
@@ -87,12 +98,17 @@ def project(x, node):
 
 
 @torch.inference_mode()
-def full_attention(x, positions, params, config, state=None):
+def full_attention(x, positions, params, config, state=None, *, paged=None):
     validate_hidden(x, config)
     h, kvh, d = config['num_attention_heads'], config['num_key_value_heads'], config['head_dim']
     if h % kvh:
         raise ValueError('Q heads must be divisible by KV heads')
-    past = 0 if state is None else state.key.shape[2]
+    past = paged.past if paged is not None else (0 if state is None else state.key.shape[2])
+    if paged is not None:
+        if state is not None or x.shape[1] != 1 or x.device.type != 'cuda':
+            raise ValueError('paged path requires CUDA single-token decode without dense state')
+        if paged.key.shape != paged.value.shape or paged.key.ndim != 4 or paged.key.shape[1] % 256:
+            raise ValueError('paged cache requires matching 4D pools and 256-aligned pages')
     expected_pos = torch.arange(past, past+x.shape[1], dtype=torch.int64, device=x.device).unsqueeze(0)
     if positions.device != x.device or positions.dtype != torch.int64 or not torch.equal(positions, expected_pos):
         raise ValueError('positions must follow cached prefix')
@@ -106,6 +122,17 @@ def full_attention(x, positions, params, config, state=None):
         raise ValueError('only default text RoPE supported')
     q, k = partial_rope(q,k,positions,theta=rope['rope_theta'],
                         rotary_dim=int(d*rope.get('partial_rotary_factor',1.0)))
+    if paged is not None:
+        from flash_attn import flash_attn_with_kvcache
+        # Append on the current stream BEFORE attention reads the pool. No host barrier.
+        paged.key.view(-1,kvh,d).index_copy_(0,paged.slots,k[0].transpose(0,1))
+        paged.value.view(-1,kvh,d).index_copy_(0,paged.slots,v[0].transpose(0,1))
+        out = flash_attn_with_kvcache(
+            q.transpose(1,2).contiguous(),paged.key,paged.value,
+            cache_seqlens=paged.context_lens,block_table=paged.block_table,
+            softmax_scale=d**-0.5,causal=True)
+        out = out.reshape(1,1,h*d) * gate.reshape(1,1,h*d).sigmoid()
+        return project(out,params.o_proj), None  # pool already updated; no second write
     if state is not None:
         cpu_float(state.key,state.value)
         if (state.key.shape != (1,kvh,past,d) or state.value.shape != state.key.shape
@@ -187,11 +214,11 @@ def gated_delta_net(x, params, config, state=None, *, state_dtype=torch.float32)
 
 
 @torch.inference_mode()
-def decoder_layer(x, positions, params, config, layer_idx, state=None, *, state_dtype=torch.float32):
+def decoder_layer(x, positions, params, config, layer_idx, state=None, *, state_dtype=torch.float32, paged=None):
     """Real residual + mixer + MLP calculation over one registered layer node."""
     y = rms_norm(x,params.input_layernorm.weight,config['rms_norm_eps'])
     if config['layer_types'][layer_idx] == 'full_attention':
-        y,new_state = full_attention(y,positions,params.self_attn,config,state)
+        y,new_state = full_attention(y,positions,params.self_attn,config,state,paged=paged)
     elif config['layer_types'][layer_idx] == 'linear_attention':
         start = 0 if state is None else state.length
         if not torch.equal(positions,torch.arange(start,start+x.shape[1],device=x.device).unsqueeze(0)):

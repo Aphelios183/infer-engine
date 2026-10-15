@@ -2,6 +2,10 @@
 
 当前主线：Qwen3.5-4B。工作目录：`/home/ubuntu/infer-engine`。
 
+现在学习：[Week5 Lesson4——从请求循环到批量执行](week5/LESSON_04_BATCH_EXECUTION.md)。分页Decode已接通显式实验路径；性能收益不稳定，默认dense不变，详见[实测报告](week5/PAGED_BENCHMARK_20261014.md)。
+
+2026-10-14 当前入口：[Week5：从 Qwen3.5 适配进入分页执行与批量化](week5/PLAN.md) → [Week6：Decode Graph 与扩展架构](week6/PLAN.md)。两周按课次验收，不以日历自动完成。下面的 Week4 入口保留作前置课程记录。
+
 - [总路线图](ROADMAP.md)
 - [面试能力耦合计划：项目、C++、性能与逐课追问](INTERVIEW_PLAN.md)
 - [2026-10-01面经与官方岗位调研（含来源限制）](docs/INTERVIEW_RESEARCH_2026-10-01.md)

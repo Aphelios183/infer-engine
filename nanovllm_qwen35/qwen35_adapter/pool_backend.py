@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 from .contracts import parse_text_contract
 from .runner_inputs import RunnerInputBuilder
-from .layer_compute import FullState, GDNState, decoder_layer, rms_norm
+from .layer_compute import FullState, GDNState, PagedDecode, decoder_layer, rms_norm
 
 
 class PooledCPUBackend:
@@ -71,12 +71,18 @@ class PooledCPUBackend:
     @torch.inference_mode()
     def forward(self, inputs):
         batch = self._check_inputs(inputs)
+        use_paged = getattr(self,'decode_backend','dense') == 'flash_paged' and not inputs.is_prefill
+        if use_paged and (self.device.type != 'cuda' or self.block_size % 256
+                          or any(n != 1 for n in batch.input_counts)):
+            raise ValueError('flash_paged requires CUDA single-token decode and page size divisible by 256')
         # From this point failure requires whole-batch disposal, not a retry.
         self._attempted_batch = batch
         # Batch-local immutable metadata: upload once, share across all layers.
         # Do not retain/reuse these buffers across batches or change stream semantics.
         positions_gpu = inputs.positions.to(self.device)
         slots_gpu = inputs.slot_mapping.long().to(self.device)
+        tables_gpu = inputs.block_tables.to(self.device) if use_paged else None
+        lengths_gpu = inputs.context_lens.to(self.device) if use_paged else None
         x = F.embedding(inputs.input_ids.to(self.device),self.parameters.model.embed_tokens.weight)
         edges = inputs.cu_seqlens_q.tolist()
         # Request-local logical-to-physical history addresses do not depend on layer.
@@ -84,7 +90,7 @@ class PooledCPUBackend:
         history_addresses = []
         for row, (a, b) in enumerate(zip(edges, edges[1:])):
             past = inputs.context_lens[row].item() - (b - a)
-            if past and self.full_map:
+            if past and self.full_map and not use_paged:
                 logical = torch.arange(past, dtype=torch.int64)
                 addresses = (inputs.block_tables[row, logical // self.block_size].long()
                              * self.block_size + logical % self.block_size)
@@ -102,28 +108,33 @@ class PooledCPUBackend:
                 state_slot = inputs.state_slots[row].item()
                 if self.states.lookup(request_id) != state_slot:
                     raise ValueError('state owner changed during execution')
+                paged = None
                 if layer_id in self.full_map:
                     idx = self.full_map[layer_id]
                     # Flatten physical blocks; logical order comes ONLY from block_table.
                     kpool = self.kv_pool[0,idx].view(-1,c['num_key_value_heads'],c['head_dim'])
                     vpool = self.kv_pool[1,idx].view_as(kpool)
                     addresses = history_addresses[row]
-                    old = None if past==0 else FullState(
+                    old = None if past==0 or use_paged else FullState(
                         kpool.index_select(0,addresses).transpose(0,1).unsqueeze(0),
                         vpool.index_select(0,addresses).transpose(0,1).unsqueeze(0))
+                    if use_paged:
+                        paged = PagedDecode(self.kv_pool[0,idx],self.kv_pool[1,idx],
+                                            slots_gpu[a:b],tables_gpu[row:row+1],
+                                            lengths_gpu[row:row+1],past)
                 else:
                     idx = self.linear_map[layer_id]
                     old = None if past==0 else GDNState(
                         self.states.conv_pool[idx,state_slot].unsqueeze(0),
                         self.states.recurrent_pool[idx,state_slot].unsqueeze(0),past)
                 out,new = decoder_layer(x[a:b].unsqueeze(0),positions,params,c,layer_id,old,
-                                        state_dtype=self.states.recurrent_pool.dtype)
-                if layer_id in self.full_map:
+                                        state_dtype=self.states.recurrent_pool.dtype,paged=paged)
+                if layer_id in self.full_map and not use_paged:
                     slots = slots_gpu[a:b]
                     # Only append current tokens. Do not rewrite historical or padding slots.
                     kpool.index_copy_(0,slots,new.key[0,:,past:,:].transpose(0,1))
                     vpool.index_copy_(0,slots,new.value[0,:,past:,:].transpose(0,1))
-                else:
+                elif layer_id in self.linear_map:
                     # Integer indexing gives pool views. Explicit copy_ writes originals.
                     self.states.conv_pool[idx,state_slot].copy_(new.conv[0])
                     self.states.recurrent_pool[idx,state_slot].copy_(new.recurrent[0])
